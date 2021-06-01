@@ -1,4 +1,4 @@
-# SCW-V1.0
+# Smart Connected Worker (SCW) - Version 1.0
 
 ## Step 1: Installation
 
@@ -23,5 +23,5 @@ Or, you can just download the following weights from my goolge drive and copy th
 2. [craft_mlt_25k.pth](https://drive.google.com/file/d/1uPHybaMrCO0iIz_4RAL44vn4iVxdK1xC/view?usp=sharing): for performing the CRAFT-based text-detection module.
 3. [TPS-ResNet-BiLSTM-Attn.pth](https://drive.google.com/file/d/1nn9LtvmkGrpOyMc9r9ZJYiJu6JEbwGB9/view?usp=sharing): Similarly, for performing the CRAFT-based text-detection module.
 
-## Step 3: 
+## Step 3: Configuration for Smart Meter Connection (Modbus)
 
