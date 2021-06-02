@@ -37,6 +37,7 @@ A_power = master.execute(1, cst.READ_HOLDING_REGISTERS, 1167, 2) # Line 52
 
 So for your custom smart meter connection, you need to change the host number and the port to connect the master device to the smart meter ([reference](https://code.google.com/archive/p/modbus-tk/wikis/ModbusMasterExample.wiki)).
 Then, you need to configure the **master.execute** function using the slave ID, the function code, the starting address, and the output value (see the same reference above).
+The information that you need should be given by the manufacturer of the smart meter (or from a user guide).
 
 The **ReadFloat** function is to decode the digital data obtained from the smart meter into the format and unit that we want.
 
@@ -47,9 +48,13 @@ In this SCW project, three cameras are utilized to monitor the workflow of the m
 These three cameras are connected using wired-connection to the master device (the computer that this program runs on) in the following code from the **main.py**:
 
 ```
-
+worker_camera = cv2.VideoCapture(0, cv2.CAP_DSHOW) # Line 218
+printer_camera = cv2.VideoCapture(3, cv2.CAP_DSHOW) # Line 219
+web_camera = cv2.VideoCapture(1, cv2.CAP_DSHOW) # Line 220
 ```
+Here, you need to change the integer number according to the camera port number of each camera.
 
+## Step 5: Customized Training and Configuration of Code
 
 
 
