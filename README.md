@@ -43,7 +43,7 @@ The **ReadFloat** function is to decode the digital data obtained from the smart
 
 ## Step 4: Configuration for Cameras
 
-In this SCW project, three cameras are utilized to monitor the workflow of the manufacturing system: 1. the **worker camera**, located on the headset of the operator, monitors the operator's vision during human-machine interaction; 2. the **printer camera**, located inside the 3D printer (which is the case study of our project), monitors the motion and behavior of the machine during its operation; 3. th **web camera**, which is a global surveillance camera that monitors the entire lab.
+In this SCW project, three cameras are utilized to monitor the workflow of the manufacturing system: 1. the **worker camera**, located on the headset of the operator, monitors the operator's vision during human-machine interaction; 2. the **printer camera**, located inside the 3D printer (which is the case study of our project), monitors the motion and behavior of the machine during its operation; 3. the **web camera**, which is a global surveillance camera that monitors the entire lab.
 
 These three cameras are connected using wired-connection to the master device (the computer that this program runs on) in the following code from the **main.py**:
 
@@ -57,4 +57,6 @@ Here, you need to change the integer number according to the camera port number 
 ## Step 5: Customized Training and Configuration of Code
 
 
+
+For the training of the YOLO-based object detection model, follow this [Colab Notebook](https://colab.research.google.com/drive/1b9tqeVFkMeuDiKbXy1MkQ1w3IntuU11G?usp=sharing).
 
