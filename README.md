@@ -8,6 +8,13 @@ cd SCW-V1.0
 pip install -r requirements.txt
 ```
 
+Note that you may need **Windows** operating system and **PyTorch** with a compatible GPU to run the program optimally.
+The program has been tested with **Windows 10 and PyTorch 1.6.0**.
+
+For the installation of PyTorch, please refer to the [official website](https://pytorch.org/get-started/locally/)
+For installation of previous versions of PyTorch (for example, the version 1.6.0 that was tested on), refer to [this page](https://pytorch.org/get-started/previous-versions/)
+
+
 ## Step 2: Download Pre-trained Weights
 
 ```
@@ -54,9 +61,9 @@ web_camera = cv2.VideoCapture(1, cv2.CAP_DSHOW) # Line 220
 ```
 Here, you need to change the integer number according to the camera port number of each camera.
 
-## Step 5: Customized Training and Configuration of Code
+## Step 5: Customized Training
+
+For the training of the YOLO-based object detection model, follow this [Colab Notebook](https://colab.research.google.com/drive/1b9tqeVFkMeuDiKbXy1MkQ1w3IntuU11G?usp=sharing). Specifically, we are using the PyTorch implementation of the YOLO-V3 from this [GitHub](https://github.com/eriklindernoren/PyTorch-YOLOv3/tree/8eea432831a74d3cbeed4ecb79097db893ee8488).
 
 
-
-For the training of the YOLO-based object detection model, follow this [Colab Notebook](https://colab.research.google.com/drive/1b9tqeVFkMeuDiKbXy1MkQ1w3IntuU11G?usp=sharing).
 
