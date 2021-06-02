@@ -25,3 +25,22 @@ Or, you can just download the following weights from my goolge drive and copy th
 
 ## Step 3: Configuration for Smart Meter Connection (Modbus)
 
+In the "/utils/" directory is the python file **smartmeter_modbus.py**, which consists of the code that connects to the smart meter via ModBus wireless connection, obtains the digital data, and stores the data into a list to be processed in the main program.
+
+In line 48 is the code for connecting to the smart meter, and line 52 is the example of obtaining the digital data from the smart meter:
+
+```
+master = modbus_tcp.TcpMaster(host='192.168.1.3', port=502) # Line 42
+
+A_power = master.execute(1, cst.READ_HOLDING_REGISTERS, 1167, 2) # Line 52
+```
+
+So for your custom smart meter connection, you need to change the host number and the port to connect the master device to the smart meter ([reference](https://code.google.com/archive/p/modbus-tk/wikis/ModbusMasterExample.wiki)).
+Then, you need to configure the **master.execute** function using the slave ID, the function code, the starting address, and the output value (see the same reference above).
+
+The **ReadFloat** function is to decode the digital data obtained from the smart meter into the format and unit that we want.
+
+## Step 4: Configuration for Cameras
+
+
+
