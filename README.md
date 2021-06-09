@@ -80,7 +80,7 @@ In order to access the webpage-GUI on other computers that are not connected to 
 2. Add the environment of the ngrok.exe to your computer
 3. Run our program on your computer and establish the webpage-GUI on localhost on the computer
 4. Run ngrok.exe with input "localhost 8000"
-5. Other computers can enter the URL provided by ngrok to access the webpage-GUI in real-time (note that free connection lasts 2 hours and only one connection per time)
+5. Other computers can enter the URL provided by ngrok to access the webpage-GUI in real-time (note that free connection lasts 2 hours and support only one connection per time)
 
 
 
