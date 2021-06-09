@@ -70,7 +70,7 @@ The module for text and finger detection/recognitions utilize pre-trained models
 The module for energy disaggregation is still currently under development. The training of the LSTM model can be referenced [here](https://github.com/minhup/Energy-Disaggregation) and this [secondary source](https://github.com/pipette/Electricity-load-disaggregation).
 
 
-## Step 5: Supplementary Information (Keep Updating)
+## Step 6: Supplementary Information (Keep Updating)
 
 ### Using "ngrok" to forward webpage-GUI to other computers via the Internet (06/09/2021)
 
