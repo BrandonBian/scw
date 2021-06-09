@@ -70,6 +70,24 @@ The module for text and finger detection/recognitions utilize pre-trained models
 The module for energy disaggregation is still currently under development. The training of the LSTM model can be referenced [here](https://github.com/minhup/Energy-Disaggregation) and this [secondary source](https://github.com/pipette/Electricity-load-disaggregation).
 
 
+## Step 5: Supplementary Information (Keep Updating)
+
+### Using "ngrok" to forward webpage-GUI to other computers via the Internet (06/09/2021)
+
+In order to access the webpage-GUI on other computers that are not connected to the server/master device via a local network, we used the "ngrok" as an initial and hopefully temporary approach.
+
+1. Download ngrok [here](https://ngrok.com/download) and install.
+2. Add the environment of the ngrok.exe to your computer
+3. Run our program on your computer and establish the webpage-GUI on localhost on the computer
+4. Run ngrok.exe with input "localhost 8000"
+5. Other computers can enter the URL provided by ngrok to access the webpage-GUI in real-time (note that free connection lasts 2 hours and only one connection per time)
+
+
+
+
+
+
+
 
 
 
