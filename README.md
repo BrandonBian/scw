@@ -78,10 +78,22 @@ In order to access the webpage-GUI on other computers that are not connected to 
 
 1. Download ngrok [here](https://ngrok.com/download) and install.
 2. Add the environment of the ngrok.exe to your computer
-3. Run our program on your computer and establish the webpage-GUI on localhost on the computer
+3. Run our program on your computer and establish the webpage-GUI on localhost:8000 on the computer
 4. Run ngrok.exe with input "localhost 8000"
 5. Other computers can enter the URL provided by ngrok to access the webpage-GUI in real-time (note that free connection lasts 2 hours and support only one connection per time)
 
+
+### Using "localtunnel" to forward webpage-GUI to other computers via the Internet (06/12/2021)
+
+LocalTunnel is probably a better alternative to ngrok, since it is free and not limited in connection time.
+
+1. Install localtunnel according to the [GitHub](https://github.com/localtunnel/localtunnel)
+2. Run our program on your computer and establish the webpage-GUI on localhost:8000 on the computer
+3. Run localtunnel by opening the command line window and typing in the command:
+
+```
+lt -p 8000 -s [your customized subdomain name]
+```
 
 
 
