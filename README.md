@@ -2,6 +2,8 @@
 
 ## Introduction and Overview
 
+![GIF](demo_images/finger_detection_demo.gif)
+
 ## Step 1: Installation
 
 ```
