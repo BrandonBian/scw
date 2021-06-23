@@ -2,6 +2,9 @@
 
 ## Introduction and Overview
 
+
+This is a demonstration of the finger and text recognition module, which automatically identifies the texts as well as the human's finger positions in real-time for the monitoring of human-machine interactions:
+
 ![GIF](demo_images/finger_detection_demo.gif)
 
 ## Step 1: Installation
