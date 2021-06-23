@@ -11,10 +11,10 @@ pip install -r requirements.txt
 ```
 
 Note that you may need **Windows** operating system and **PyTorch** with a compatible GPU to run the program optimally.
-The program has been tested with **Windows 10 and PyTorch 1.6.0**.
+The program has been tested with **Windows 10, PyTorch 1.6.0, and a GPU of NVIDIA RTX 2070**.
 
 For the installation of PyTorch, please refer to the [official website](https://pytorch.org/get-started/locally/)
-For installation of previous versions of PyTorch (for example, the version 1.6.0 that was tested on), refer to [this page](https://pytorch.org/get-started/previous-versions/)
+For installation of previous versions of PyTorch (for example, the version 1.6.0 that was tested on), refer to [this page](https://pytorch.org/get-started/previous-versions/).
 
 
 ## Step 2: Download Pre-trained Weights
@@ -40,7 +40,6 @@ In line 42 is the code for connecting to the smart meter, and line 52 is the exa
 
 ```
 master = modbus_tcp.TcpMaster(host='192.168.1.3', port=502) # Line 42
-
 A_power = master.execute(1, cst.READ_HOLDING_REGISTERS, 1167, 2) # Line 52
 ```
 
@@ -139,4 +138,13 @@ Note that you can always use the previous version of the GUI **by not changing t
 
 I will put here some screenshots for the preview of the updated GUI:
 
-![Screenshot](demo_images/energy_demo.jpg)
+![Screenshot](demo_images/energy_demo.png)
+
+The screenshot above shows that there are three sections on the top of the webpage: the **DOE Monitor** displays the real-time camera images, the processed images by the machine learning modules, as well as the predicted results of the machine learning modules; the **Energy Consumption Monitor** displays the dynamic line charts that monitors the energy consumption of the smart meters; the **Assembly System** displays the camera monitor of the assembly system - this part is still under construction.
+
+
+![Screenshot](demo_images/meters_demo.png)
+
+The screenshot above displays the dynamic line charts of the individual smart meter readings - all in real time.
+
+So the updated GUI divides the webpage into three main sections, so that things will not be all piled up together.
