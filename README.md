@@ -148,3 +148,9 @@ The screenshot above shows that there are three sections on the top of the webpa
 The screenshot above displays the dynamic line charts of the individual smart meter readings - all in real time.
 
 So the updated GUI divides the webpage into three main sections, so that things will not be all piled up together.
+
+## Acknowledgement
+
+This research is mainly supported by the Technical Roadmap Project "Establishing Smart Connected Workers Infrastructure for Enabling Advanced Manufacturing: A Pathway to Implement Smart Manufacturing for Small to Medium Sized Enterprises (SMEs)" funded by the Clean Energy Smart Manufacturing Innovation Institute (CESMII) sponsored through the U.S. Department of Energy's Office of Energy Efficiency and Renewable Energy (EERE) under the Advanced Manufacturing Office (Award Number UCLA: 20190511-16/DOE: DE-EE0007613).
+
+This research is also supported by the project "Autonomy Research Center for STEAHM" sponsored through the U.S. NASA MUREP Institutional Research Opportunity (MIRO) program (Award Number 80NSSC19M0200).
