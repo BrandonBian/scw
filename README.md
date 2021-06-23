@@ -133,5 +133,8 @@ def doemonitor(): # doem: doe monitor (the cameras and the machine learning outp
 In this updated GUI, there will be tags/buttons so that you can choose what information to display on the main site (instead of having all information displayed).
 Note that you can always use the previous version of the GUI **by not changing the main.py file**.
 
-### 4. Demonstration Screenshots (06/23/2021)
+### 4. Demonstration Screenshots for Updated GUI (06/23/2021)
+
+I will put here some screenshots for the preview of the updated GUI:
+
 
