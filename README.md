@@ -1,4 +1,4 @@
-# Smart Connected Worker (SCW) - Version 1.0
+# Project: Smart Connected Worker (SCW) - Version 1.0
 
 ## Introduction and Overview
 
