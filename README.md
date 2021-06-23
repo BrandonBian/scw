@@ -70,9 +70,9 @@ The module for text and finger detection/recognitions utilize pre-trained models
 The module for energy disaggregation is still currently under development. The training of the LSTM model can be referenced [here](https://github.com/minhup/Energy-Disaggregation) and this [secondary source](https://github.com/pipette/Electricity-load-disaggregation).
 
 
-## Step 6: Supplementary Information (Keep Updating)
+## Step 6: Supplementary Information and Updates (Keep Updating)
 
-### Using "ngrok" to forward webpage-GUI to other computers via the Internet (06/09/2021)
+### 1. Using "ngrok" to forward webpage-GUI to other computers via the Internet (06/09/2021)
 
 In order to access the webpage-GUI on other computers that are not connected to the server/master device via a local network, we used the "ngrok" as an initial and hopefully temporary approach.
 
@@ -83,7 +83,7 @@ In order to access the webpage-GUI on other computers that are not connected to 
 5. Other computers can enter the URL provided by ngrok to access the webpage-GUI in real-time (note that free connection lasts 2 hours and support only one connection per time)
 
 
-### Recommended: using "localtunnel" to forward webpage-GUI to other computers via the Internet (06/12/2021)
+### 2. Recommended: using "localtunnel" to forward webpage-GUI to other computers via the Internet (06/12/2021)
 
 LocalTunnel is probably a better alternative to ngrok, since it is free and not limited in connection time.
 
@@ -100,8 +100,38 @@ e.g.: lt -p 8000 -s doemonitor
 4. Copy the URL given and enter it through any device connected to internet to access the DOE webpage-based monitor GUI. Note that you would need to keep the server (the Python file on the master device PC) running at all times. 
 
 
+### 3. Updated GUI HTML template (06/23/2021)
 
+We provide a better alternative HTML template for the webpage-based GUI. The new templates are in the folder /templates/.
+In order to use these new templates, please go inside the **main.py** and perform the following changes:
 
+Locate **line 175**:
 
+```
+@app.route('/')
+def index():
+    return render_template("index.html")
+```
 
+Change it into the following:
+
+```
+@app.route('/')
+def index(): # Root: the energy dynamic line charts
+    #return render_template("index-1.html")
+    return render_template("sample.html")
+
+@app.route('/asem')
+def assembly(): # asem: assembly line images
+    return render_template("assembly.html")
+    
+@app.route('/doem')
+def doemonitor(): # doem: doe monitor (the cameras and the machine learning outputs)
+    return render_template("doe.html")
+```
+
+In this updated GUI, there will be tags/buttons so that you can choose what information to display on the main site (instead of having all information displayed).
+Note that you can always use the previous version of the GUI **by not changing the main.py file**.
+
+### 4. Demonstration Screenshots (06/23/2021)
 
