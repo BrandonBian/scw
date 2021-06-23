@@ -139,4 +139,4 @@ Note that you can always use the previous version of the GUI **by not changing t
 
 I will put here some screenshots for the preview of the updated GUI:
 
-
+![Screenshot](demo_images/energy_demo.jpg)
