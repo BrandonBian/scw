@@ -1,0 +1,1518 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!-- saved from url=(0050)file:///C:/Users/zhw89/OneDrive/Desktop/index.html -->
+<meta name="viewport" content="initial-scale=1, maximum-scale=1">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
+  <script type="text/javascript">
+    window.onload = function() {
+      $(".container-1-Minute").hide();
+      $(".container-1-Hour").hide();
+      $(".container-1-Day").hide();
+      $(".container-2").hide();
+      $(".container-3").hide();
+      $(".container-4").hide();
+      $(".container-5").hide();
+      $(".container-6").hide();
+      $(".container-7").hide();
+      var time = new Date;
+      var time2 = new Date;
+      var time3 = new Date;
+      var updateInterval = 1000; // Per Second
+      var updateInterval2 = 60000; // Per Minute
+      var updateInterval3 = 900000; // Per 15 Minutes
+      var counter = 0;
+      var counter2 = 0;
+      var counter3 = 0;
+
+      var A_Accumulated = [];
+      var B_Accumulated = [];
+      var E_Accumulated = [];
+      var F_Accumulated = [];
+      var J_Accumulated = [];
+      var N_Accumulated = [];
+
+      var A_Accumulated_Hour = [];
+      var B_Accumulated_Hour = [];
+      var E_Accumulated_Hour = [];
+      var F_Accumulated_Hour = [];
+      var J_Accumulated_Hour = [];
+      var N_Accumulated_Hour = [];
+
+      var A_Accumulated_Day = [];
+      var B_Accumulated_Day = [];
+      var E_Accumulated_Day = [];
+      var F_Accumulated_Day = [];
+      var J_Accumulated_Day = [];
+      var N_Accumulated_Day = [];
+
+      var A_Power = [];
+      var B_Power = [];
+      var E_Power = [];
+      var F_Power = [];
+      var J_Power = [];
+      var N_Power = [];
+
+      var A_Current = [];
+      var B_Current = [];
+      var E_Current = [];
+      var F_Current = [];
+      var J_Current = [];
+      var N_Current = [];
+
+
+
+      var chart1 = new CanvasJS.Chart("AccumulatedChart", {
+        zoomEnabled: true,
+        title: {
+          text: "Accumulated Energy Consumption (Minute)"
+        },
+        axisX: {
+          title: "Real Time (Interval - 1 minute; Update - per second)"
+        },
+        axisY: {
+          title: "Accumulated Energy (kWh)",
+          titleFontSize: 28
+        },
+        toolTip: {
+          shared: true
+        },
+        legend: {
+          cursor: "pointer",
+          verticalAlign: "top",
+          fontSize: 22,
+          fontColor: "dimGrey",
+          itemclick: toggleDataSeries1
+        },
+        data: [{
+            type: "line",
+            xValueType: "dateTime",
+            yValueFormatString: "####.00kWh",
+            xValueFormatString: "hh:mm:ss TT",
+            showInLegend: true,
+            name: "Meter A",
+            dataPoints: A_Accumulated
+          },
+          {
+            type: "line",
+            xValueType: "dateTime",
+            yValueFormatString: "####.00kWh",
+            showInLegend: true,
+            name: "Meter B",
+            dataPoints: B_Accumulated
+          },
+          {
+            type: "line",
+            xValueType: "dateTime",
+            yValueFormatString: "####.00kWh",
+            showInLegend: true,
+            name: "Meter E",
+            dataPoints: E_Accumulated
+          },
+          {
+            type: "line",
+            xValueType: "dateTime",
+            yValueFormatString: "####.00kWh",
+            showInLegend: true,
+            name: "Meter F",
+            dataPoints: F_Accumulated
+          },
+          {
+            type: "line",
+            xValueType: "dateTime",
+            yValueFormatString: "####.00kWh",
+            showInLegend: true,
+            name: "Meter J",
+            dataPoints: J_Accumulated
+          },
+          {
+            type: "line",
+            xValueType: "dateTime",
+            yValueFormatString: "####.00kWh",
+            showInLegend: true,
+            name: "Meter N",
+            dataPoints: N_Accumulated
+          }
+
+        ]
+      });
+
+      var chart2 = new CanvasJS.Chart("ChartA", {
+        zoomEnabled: true,
+        title: {
+          text: "Meter A"
+        },
+        axisX: {
+          title: "Real Time (Interval: 1 minute; Update: per second)",
+          titleFontSize: 20,
+        },
+        axisY: {
+          title: "Power (kW)",
+          titleFontSize: 20,
+          titleFontColor: "#4F81BC",
+          lineColor: "#4F81BC",
+          labelFontColor: "#4F81BC",
+          tickColor: "#4F81BC",
+        },
+        axisY2: {
+          title: "Current (A)",
+          titleFontSize: 20,
+          titleFontColor: "#C0504E",
+          lineColor: "#C0504E",
+          labelFontColor: "#C0504E",
+          tickColor: "#C0504E",
+        },
+        toolTip: {
+          shared: true
+        },
+        legend: {
+          cursor: "pointer",
+          verticalAlign: "top",
+          fontSize: 22,
+          fontColor: "dimGrey",
+          itemclick: toggleDataSeries2
+        },
+        data: [{
+            type: "line",
+            xValueType: "dateTime",
+            yValueFormatString: "####.00kW",
+            xValueFormatString: "hh:mm:ss TT",
+            showInLegend: true,
+            name: "Power",
+            dataPoints: A_Power
+          },
+          {
+            type: "line",
+            xValueType: "dateTime",
+            yValueFormatString: "####.00A",
+            axisYType: "secondary",
+            showInLegend: true,
+            name: "Current",
+            dataPoints: A_Current
+          },
+        ]
+      });
+
+      var chart3 = new CanvasJS.Chart("ChartB", {
+        zoomEnabled: true,
+        title: {
+          text: "Meter B"
+        },
+        axisX: {
+          title: "Real Time (Interval: 1 minute; Update: per second)",
+          titleFontSize: 19,
+        },
+        axisY: {
+          title: "Power (kW)",
+          titleFontSize: 20,
+          titleFontColor: "#4F81BC",
+          lineColor: "#4F81BC",
+          labelFontColor: "#4F81BC",
+          tickColor: "#4F81BC",
+        },
+        axisY2: {
+          title: "Current (A)",
+          titleFontSize: 20,
+          titleFontColor: "#C0504E",
+          lineColor: "#C0504E",
+          labelFontColor: "#C0504E",
+          tickColor: "#C0504E",
+        },
+        toolTip: {
+          shared: true
+        },
+        legend: {
+          cursor: "pointer",
+          verticalAlign: "top",
+          fontSize: 22,
+          fontColor: "dimGrey",
+          itemclick: toggleDataSeries3
+        },
+        data: [{
+            type: "line",
+            xValueType: "dateTime",
+            yValueFormatString: "####.00kW",
+            xValueFormatString: "hh:mm:ss TT",
+            showInLegend: true,
+            name: "Power",
+            dataPoints: B_Power
+          },
+          {
+            type: "line",
+            xValueType: "dateTime",
+            yValueFormatString: "####.00A",
+            axisYType: "secondary",
+            showInLegend: true,
+            name: "Current",
+            dataPoints: B_Current
+          },
+        ]
+      });
+
+
+      var chart4 = new CanvasJS.Chart("ChartE", {
+        zoomEnabled: true,
+        title: {
+          text: "Meter E"
+        },
+        axisX: {
+          title: "Real Time (Interval: minute; Update: per second)",
+          titleFontSize: 19,
+        },
+        axisY: {
+          title: "Power (kW)",
+          titleFontSize: 20,
+          titleFontColor: "#4F81BC",
+          lineColor: "#4F81BC",
+          labelFontColor: "#4F81BC",
+          tickColor: "#4F81BC",
+        },
+        axisY2: {
+          title: "Current (A)",
+          titleFontSize: 20,
+          titleFontColor: "#C0504E",
+          lineColor: "#C0504E",
+          labelFontColor: "#C0504E",
+          tickColor: "#C0504E",
+        },
+        toolTip: {
+          shared: true
+        },
+        legend: {
+          cursor: "pointer",
+          verticalAlign: "top",
+          fontSize: 22,
+          fontColor: "dimGrey",
+          itemclick: toggleDataSeries4
+        },
+        data: [{
+            type: "line",
+            xValueType: "dateTime",
+            yValueFormatString: "####.00kW",
+            xValueFormatString: "hh:mm:ss TT",
+            showInLegend: true,
+            name: "Power",
+            dataPoints: E_Power
+          },
+          {
+            type: "line",
+            xValueType: "dateTime",
+            yValueFormatString: "####.00A",
+            axisYType: "secondary",
+            showInLegend: true,
+            name: "Current",
+            dataPoints: E_Current
+          },
+        ]
+      });
+
+      var chart5 = new CanvasJS.Chart("ChartF", {
+        zoomEnabled: true,
+        title: {
+          text: "Meter F"
+        },
+        axisX: {
+          title: "Real Time (Interval: 1 minute; Update: per second)",
+          titleFontSize: 19,
+        },
+        axisY: {
+          title: "Power (kW)",
+          titleFontSize: 20,
+          titleFontColor: "#4F81BC",
+          lineColor: "#4F81BC",
+          labelFontColor: "#4F81BC",
+          tickColor: "#4F81BC",
+        },
+        axisY2: {
+          title: "Current (A)",
+          titleFontSize: 20,
+          titleFontColor: "#C0504E",
+          lineColor: "#C0504E",
+          labelFontColor: "#C0504E",
+          tickColor: "#C0504E",
+        },
+        toolTip: {
+          shared: true
+        },
+        legend: {
+          cursor: "pointer",
+          verticalAlign: "top",
+          fontSize: 22,
+          fontColor: "dimGrey",
+          itemclick: toggleDataSeries5
+        },
+        data: [{
+            type: "line",
+            xValueType: "dateTime",
+            yValueFormatString: "####.00kW",
+            xValueFormatString: "hh:mm:ss TT",
+            showInLegend: true,
+            name: "Power",
+            dataPoints: F_Power
+          },
+          {
+            type: "line",
+            xValueType: "dateTime",
+            yValueFormatString: "####.00A",
+            axisYType: "secondary",
+            showInLegend: true,
+            name: "Current",
+            dataPoints: F_Current
+          },
+        ]
+      });
+
+      var chart6 = new CanvasJS.Chart("ChartJ", {
+        zoomEnabled: true,
+        title: {
+          text: "Meter J"
+        },
+        axisX: {
+          title: "Real Time (Interval: 1 minute; Update: per second)",
+          titleFontSize: 20,
+        },
+        axisY: {
+          title: "Power (kW)",
+          titleFontSize: 20,
+          titleFontColor: "#4F81BC",
+          lineColor: "#4F81BC",
+          labelFontColor: "#4F81BC",
+          tickColor: "#4F81BC",
+        },
+        axisY2: {
+          title: "Current (A)",
+          titleFontSize: 20,
+          titleFontColor: "#C0504E",
+          lineColor: "#C0504E",
+          labelFontColor: "#C0504E",
+          tickColor: "#C0504E",
+        },
+        toolTip: {
+          shared: true
+        },
+        legend: {
+          cursor: "pointer",
+          verticalAlign: "top",
+          fontSize: 22,
+          fontColor: "dimGrey",
+          itemclick: toggleDataSeries6
+        },
+        data: [{
+            type: "line",
+            xValueType: "dateTime",
+            yValueFormatString: "####.00kW",
+            xValueFormatString: "hh:mm:ss TT",
+            showInLegend: true,
+            name: "Power",
+            dataPoints: J_Power
+          },
+          {
+            type: "line",
+            xValueType: "dateTime",
+            yValueFormatString: "####.00A",
+            axisYType: "secondary",
+            showInLegend: true,
+            name: "Current",
+            dataPoints: J_Current
+          },
+        ]
+      });
+
+      var chart7 = new CanvasJS.Chart("ChartN", {
+        zoomEnabled: true,
+        title: {
+          text: "Meter N"
+        },
+        axisX: {
+          title: "Real Time (Interval: 1 minute; Update: per second)",
+          titleFontSize: 20,
+        },
+        axisY: {
+          title: "Power (kW)",
+          titleFontSize: 20,
+          titleFontColor: "#4F81BC",
+          lineColor: "#4F81BC",
+          labelFontColor: "#4F81BC",
+          tickColor: "#4F81BC",
+        },
+        axisY2: {
+          title: "Current (A)",
+          titleFontSize: 20,
+          titleFontColor: "#C0504E",
+          lineColor: "#C0504E",
+          labelFontColor: "#C0504E",
+          tickColor: "#C0504E",
+        },
+        toolTip: {
+          shared: true
+        },
+        legend: {
+          cursor: "pointer",
+          verticalAlign: "top",
+          fontSize: 22,
+          fontColor: "dimGrey",
+          itemclick: toggleDataSeries7
+        },
+        data: [{
+            type: "line",
+            xValueType: "dateTime",
+            yValueFormatString: "####.00kW",
+            xValueFormatString: "hh:mm:ss TT",
+            showInLegend: true,
+            name: "Power",
+            dataPoints: N_Power
+          },
+          {
+            type: "line",
+            xValueType: "dateTime",
+            yValueFormatString: "####.00A",
+            axisYType: "secondary",
+            showInLegend: true,
+            name: "Current",
+            dataPoints: N_Current
+          },
+        ]
+      });
+
+
+      var chart8 = new CanvasJS.Chart("Accumulated_Hour", {
+        zoomEnabled: true,
+        title: {
+          text: "Accumulated Energy Consumption (Hour)"
+        },
+        axisX: {
+          title: "Real Time (Interval - 1 hour; Update - per minute)"
+        },
+        axisY: {
+          title: "Accumulated Energy (kWh)",
+          titleFontSize: 28,
+        },
+        toolTip: {
+          shared: true
+        },
+        legend: {
+          cursor: "pointer",
+          verticalAlign: "top",
+          fontSize: 22,
+          fontColor: "dimGrey",
+          itemclick: toggleDataSeries8
+        },
+        data: [{
+            type: "line",
+            xValueType: "dateTime",
+            yValueFormatString: "####.00kWh",
+            xValueFormatString: "hh:mm:ss TT",
+            showInLegend: true,
+            name: "Meter A",
+            dataPoints: A_Accumulated_Hour
+          },
+          {
+            type: "line",
+            xValueType: "dateTime",
+            yValueFormatString: "####.00kWh",
+            showInLegend: true,
+            name: "Meter B",
+            dataPoints: B_Accumulated_Hour
+          },
+          {
+            type: "line",
+            xValueType: "dateTime",
+            yValueFormatString: "####.00kWh",
+            showInLegend: true,
+            name: "Meter E",
+            dataPoints: E_Accumulated_Hour
+          },
+          {
+            type: "line",
+            xValueType: "dateTime",
+            yValueFormatString: "####.00kWh",
+            showInLegend: true,
+            name: "Meter F",
+            dataPoints: F_Accumulated_Hour
+          },
+          {
+            type: "line",
+            xValueType: "dateTime",
+            yValueFormatString: "####.00kWh",
+            showInLegend: true,
+            name: "Meter J",
+            dataPoints: J_Accumulated_Hour
+          },
+          {
+            type: "line",
+            xValueType: "dateTime",
+            yValueFormatString: "####.00kWh",
+            showInLegend: true,
+            name: "Meter N",
+            dataPoints: N_Accumulated_Hour
+          }
+
+        ]
+      });
+
+
+      var chart9 = new CanvasJS.Chart("Accumulated_Day", {
+        zoomEnabled: true,
+        title: {
+          text: "Accumulated Energy Consumption (Day)"
+        },
+        axisX: {
+          title: "Real Time (Interval - 1 day; Update - per 15 minutes)"
+        },
+        axisY: {
+          title: "Accumulated Energy (kWh)",
+          titleFontSize: 28,
+        },
+        toolTip: {
+          shared: true
+        },
+        legend: {
+          cursor: "pointer",
+          verticalAlign: "top",
+          fontSize: 22,
+          fontColor: "dimGrey",
+          itemclick: toggleDataSeries9
+        },
+        data: [{
+            type: "line",
+            xValueType: "dateTime",
+            yValueFormatString: "####.00kWh",
+            xValueFormatString: "hh:mm:ss TT",
+            showInLegend: true,
+            name: "Meter A",
+            dataPoints: A_Accumulated_Day
+          },
+          {
+            type: "line",
+            xValueType: "dateTime",
+            yValueFormatString: "####.00kWh",
+            showInLegend: true,
+            name: "Meter B",
+            dataPoints: B_Accumulated_Day
+          },
+          {
+            type: "line",
+            xValueType: "dateTime",
+            yValueFormatString: "####.00kWh",
+            showInLegend: true,
+            name: "Meter E",
+            dataPoints: E_Accumulated_Day
+          },
+          {
+            type: "line",
+            xValueType: "dateTime",
+            yValueFormatString: "####.00kWh",
+            showInLegend: true,
+            name: "Meter F",
+            dataPoints: F_Accumulated_Day
+          },
+          {
+            type: "line",
+            xValueType: "dateTime",
+            yValueFormatString: "####.00kWh",
+            showInLegend: true,
+            name: "Meter J",
+            dataPoints: J_Accumulated_Day
+          },
+          {
+            type: "line",
+            xValueType: "dateTime",
+            yValueFormatString: "####.00kWh",
+            showInLegend: true,
+            name: "Meter N",
+            dataPoints: N_Accumulated_Day
+          }
+
+        ]
+      });
+
+      function toggleDataSeries1(e) {
+        if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+          e.dataSeries.visible = false;
+        } else {
+          e.dataSeries.visible = true;
+        }
+        chart1.render();
+      }
+
+      function toggleDataSeries2(e) {
+        if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+          e.dataSeries.visible = false;
+        } else {
+          e.dataSeries.visible = true;
+        }
+        chart2.render();
+      }
+
+      function toggleDataSeries3(e) {
+        if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+          e.dataSeries.visible = false;
+        } else {
+          e.dataSeries.visible = true;
+        }
+        chart3.render();
+      }
+
+      function toggleDataSeries4(e) {
+        if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+          e.dataSeries.visible = false;
+        } else {
+          e.dataSeries.visible = true;
+        }
+        chart4.render();
+      }
+
+      function toggleDataSeries5(e) {
+        if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+          e.dataSeries.visible = false;
+        } else {
+          e.dataSeries.visible = true;
+        }
+        chart5.render();
+      }
+
+      function toggleDataSeries6(e) {
+        if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+          e.dataSeries.visible = false;
+        } else {
+          e.dataSeries.visible = true;
+        }
+        chart6.render();
+      }
+
+
+      function toggleDataSeries7(e) {
+        if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+          e.dataSeries.visible = false;
+        } else {
+          e.dataSeries.visible = true;
+        }
+        chart7.render();
+      }
+
+      function toggleDataSeries8(e) {
+        if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+          e.dataSeries.visible = false;
+        } else {
+          e.dataSeries.visible = true;
+        }
+        chart8.render();
+      }
+
+      function toggleDataSeries9(e) {
+        if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+          e.dataSeries.visible = false;
+        } else {
+          e.dataSeries.visible = true;
+        }
+        chart9.render();
+      }
+
+      var button = document.getElementById("button");
+      button.addEventListener("click", chartTypeChanged);
+
+      function chartTypeChanged() {
+        chart8.render();
+      }
+
+
+      $SCRIPT_ROOT = {{ request.script_root | tojson | safe }};
+      console.log($SCRIPT_ROOT);
+
+      function updateChart() {
+
+        $.ajax({
+          type: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          url: $SCRIPT_ROOT,
+          success: function(response) {
+
+
+
+            var matches = response.match(/\[(.*?)\]/);
+
+            if (matches) {
+              var submatch = matches[1];
+            }
+
+            // submatch = the string between the square brackets [XXX] -> XXX
+
+            separate_list = submatch.split(', ') // Get the list of string representations of floats
+
+            time.setTime(time.getTime() + updateInterval);
+
+
+
+
+            yValue1 = parseFloat(separate_list[0])
+            yValue2 = parseFloat(separate_list[1])
+            yValue3 = parseFloat(separate_list[2])
+            yValue4 = parseFloat(separate_list[3])
+            yValue5 = parseFloat(separate_list[4])
+            yValue6 = parseFloat(separate_list[5])
+
+            PowerA = parseFloat(separate_list[6])
+            PowerB = parseFloat(separate_list[7])
+            PowerE = parseFloat(separate_list[8])
+            PowerF = parseFloat(separate_list[9])
+            PowerJ = parseFloat(separate_list[10])
+            PowerN = parseFloat(separate_list[11])
+
+            CurrentA = parseFloat(separate_list[12])
+            CurrentB = parseFloat(separate_list[13])
+            CurrentE = parseFloat(separate_list[14])
+            CurrentF = parseFloat(separate_list[15])
+            CurrentJ = parseFloat(separate_list[16])
+            CurrentN = parseFloat(separate_list[17])
+
+            // pushing the new values
+            A_Accumulated.push({
+              x: time.getTime(),
+              y: yValue1
+            });
+            B_Accumulated.push({
+              x: time.getTime(),
+              y: yValue2
+            });
+            E_Accumulated.push({
+              x: time.getTime(),
+              y: yValue3
+            });
+            F_Accumulated.push({
+              x: time.getTime(),
+              y: yValue4
+            });
+            J_Accumulated.push({
+              x: time.getTime(),
+              y: yValue5
+            });
+            N_Accumulated.push({
+              x: time.getTime(),
+              y: yValue6
+            });
+
+
+            A_Power.push({
+              x: time.getTime(),
+              y: PowerA
+            });
+            B_Power.push({
+              x: time.getTime(),
+              y: PowerB
+            });
+            E_Power.push({
+              x: time.getTime(),
+              y: PowerE
+            });
+            F_Power.push({
+              x: time.getTime(),
+              y: PowerF
+            });
+            J_Power.push({
+              x: time.getTime(),
+              y: PowerJ
+            });
+            N_Power.push({
+              x: time.getTime(),
+              y: PowerN
+            });
+
+
+            A_Current.push({
+              x: time.getTime(),
+              y: CurrentA
+            });
+            B_Current.push({
+              x: time.getTime(),
+              y: CurrentB
+            });
+            E_Current.push({
+              x: time.getTime(),
+              y: CurrentE
+            });
+            F_Current.push({
+              x: time.getTime(),
+              y: CurrentF
+            });
+            J_Current.push({
+              x: time.getTime(),
+              y: CurrentJ
+            });
+            N_Current.push({
+              x: time.getTime(),
+              y: CurrentN
+            });
+
+
+            // Limit the X-axis
+
+            if (counter >= 60) {
+
+              A_Accumulated.shift();
+              B_Accumulated.shift();
+              E_Accumulated.shift();
+              F_Accumulated.shift();
+              J_Accumulated.shift();
+              N_Accumulated.shift();
+
+
+              A_Current.shift();
+              B_Current.shift();
+              E_Current.shift();
+              F_Current.shift();
+              J_Current.shift();
+              N_Current.shift();
+
+              A_Power.shift();
+              B_Power.shift();
+              E_Power.shift();
+              F_Power.shift();
+              J_Power.shift();
+              N_Power.shift();
+
+            }
+
+            counter = counter + 1
+
+
+            // updating legend text with updated with y Value
+            chart1.options.data[0].legendText = " Meter A  " + yValue1 + "kWh";
+            chart1.options.data[1].legendText = " Meter B  " + yValue2 + "kWh";
+            chart1.options.data[2].legendText = " Meter E  " + yValue3 + "kWh";
+            chart1.options.data[3].legendText = " Meter F  " + yValue4 + "kWh";
+            chart1.options.data[4].legendText = " Meter J  " + yValue5 + "kWh";
+            chart1.options.data[5].legendText = " Meter N  " + yValue6 + "kWh";
+            chart1.render();
+
+            chart2.options.data[0].legendText = " Power  " + PowerA + "kW";
+            chart2.options.data[1].legendText = " Current  " + CurrentA + "A";
+            chart2.render();
+
+            chart3.options.data[0].legendText = " Power  " + PowerB + "kW";
+            chart3.options.data[1].legendText = " Current  " + CurrentB + "A";
+            chart3.render();
+
+            chart4.options.data[0].legendText = " Power  " + PowerE + "kW";
+            chart4.options.data[1].legendText = " Current  " + CurrentE + "A";
+            chart4.render();
+
+            chart5.options.data[0].legendText = " Power  " + PowerF + "kW";
+            chart5.options.data[1].legendText = " Current  " + CurrentF + "A";
+            chart5.render();
+
+            chart6.options.data[0].legendText = " Power  " + PowerJ + "kW";
+            chart6.options.data[1].legendText = " Current  " + CurrentJ + "A";
+            chart6.render();
+
+            chart7.options.data[0].legendText = " Power  " + PowerN + "kW";
+            chart7.options.data[1].legendText = " Current  " + CurrentN + "A";
+            chart7.render();
+
+
+          },
+        });
+      }
+    <!--      show chart 1-->
+      $("#disChart1-Minute").click(function(){
+        $(".container-1-Minute").show();
+      });
+      $("#disChart1-Hour").click(function(){
+        $(".container-1-Hour").show();
+      });
+      $("#disChart1-Day").click(function(){
+        $(".container-1-Day").show();
+      });
+      $("#disChart2").click(function(){
+        $(".container-2").show();
+      });
+      $("#disChart3").click(function(){
+        $(".container-3").show();
+      });
+      $("#disChart4").click(function(){
+        $(".container-4").show();
+      });
+      $("#disChart5").click(function(){
+        $(".container-5").show();
+      });
+      $("#disChart6").click(function(){
+        $(".container-6").show();
+      });
+      $("#disChart7").click(function(){
+        $(".container-7").show();
+      });
+
+
+<!--      hide chart-->
+      $("#hideChart1-Minute").click(function(){
+        $(".container-1-Minute").hide();
+      });
+      $("#hideChart1-Hour").click(function(){
+        $(".container-1-Hour").hide();
+      });
+      $("#hideChart1-Day").click(function(){
+        $(".container-1-Day").hide();
+      });
+      $("#hideChart2").click(function(){
+        $(".container-2").hide();
+      });
+      $("#hideChart3").click(function(){
+        $(".container-3").hide();
+      });
+      $("#hideChart4").click(function(){
+        $(".container-4").hide();
+      });
+      $("#hideChart5").click(function(){
+        $(".container-5").hide();
+      });
+      $("#hideChart6").click(function(){
+        $(".container-6").hide();
+      });
+      $("#hideChart7").click(function(){
+        $(".container-7").hide();
+      });
+      function updateChart2() {
+
+        $.ajax({
+          type: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          url: $SCRIPT_ROOT,
+          success: function(response) {
+
+            var matches = response.match(/\[(.*?)\]/);
+
+            if (matches) {
+              var submatch = matches[1];
+            }
+
+            // submatch = the string between the square brackets [XXX] -> XXX
+
+            separate_list = submatch.split(', ') // Get the list of string representations of floats
+
+            time2.setTime(time.getTime() + updateInterval2);
+
+            // console.log(separate_list)
+
+            yValue1 = parseFloat(separate_list[0])
+            yValue2 = parseFloat(separate_list[1])
+            yValue3 = parseFloat(separate_list[2])
+            yValue4 = parseFloat(separate_list[3])
+            yValue5 = parseFloat(separate_list[4])
+            yValue6 = parseFloat(separate_list[5])
+
+
+            // pushing the new values
+
+            A_Accumulated_Hour.push({
+              x: time.getTime(),
+              y: yValue1
+            });
+            B_Accumulated_Hour.push({
+              x: time.getTime(),
+              y: yValue2
+            });
+            E_Accumulated_Hour.push({
+              x: time.getTime(),
+              y: yValue3
+            });
+            F_Accumulated_Hour.push({
+              x: time.getTime(),
+              y: yValue4
+            });
+            J_Accumulated_Hour.push({
+              x: time.getTime(),
+              y: yValue5
+            });
+            N_Accumulated_Hour.push({
+              x: time.getTime(),
+              y: yValue6
+            });
+
+            // Limit the X-axis
+
+            if (counter2 >= 60) {
+
+
+              A_Accumulated_Hour.shift();
+              B_Accumulated_Hour.shift();
+              E_Accumulated_Hour.shift();
+              F_Accumulated_Hour.shift();
+              J_Accumulated_Hour.shift();
+              N_Accumulated_Hour.shift();
+
+
+            }
+
+            counter2 = counter2 + 1
+
+
+            // updating legend text with updated y Value
+
+            chart8.options.data[0].legendText = " Meter A  " + yValue1 + "kWh";
+            chart8.options.data[1].legendText = " Meter B  " + yValue2 + "kWh";
+            chart8.options.data[2].legendText = " Meter E  " + yValue3 + "kWh";
+            chart8.options.data[3].legendText = " Meter F  " + yValue4 + "kWh";
+            chart8.options.data[4].legendText = " Meter J  " + yValue5 + "kWh";
+            chart8.options.data[5].legendText = " Meter N  " + yValue6 + "kWh";
+            chart8.render();
+
+
+          },
+        });
+      }
+
+
+      function updateChart3() {
+
+        $.ajax({
+          type: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          url: $SCRIPT_ROOT,
+          success: function(response) {
+
+            var matches = response.match(/\[(.*?)\]/);
+
+
+
+            if (matches) {
+              var submatch = matches[1];
+            }
+
+            console.log(submatch)
+
+            // submatch = the string between the square brackets [XXX] -> XXX
+
+            separate_list = submatch.split(', ') // Get the list of string representations of floats
+
+            time3.setTime(time.getTime() + updateInterval3);
+
+            // console.log(separate_list)
+
+            yValue1 = parseFloat(separate_list[0])
+            yValue2 = parseFloat(separate_list[1])
+            yValue3 = parseFloat(separate_list[2])
+            yValue4 = parseFloat(separate_list[3])
+            yValue5 = parseFloat(separate_list[4])
+            yValue6 = parseFloat(separate_list[5])
+
+
+            // pushing the new values
+
+            A_Accumulated_Day.push({
+              x: time.getTime(),
+              y: yValue1
+            });
+            B_Accumulated_Day.push({
+              x: time.getTime(),
+              y: yValue2
+            });
+            E_Accumulated_Day.push({
+              x: time.getTime(),
+              y: yValue3
+            });
+            F_Accumulated_Day.push({
+              x: time.getTime(),
+              y: yValue4
+            });
+            J_Accumulated_Day.push({
+              x: time.getTime(),
+              y: yValue5
+            });
+            N_Accumulated_Day.push({
+              x: time.getTime(),
+              y: yValue6
+            });
+
+            // Limit the X-axis
+
+            if (counter3 >= 96) {
+
+
+              A_Accumulated_Day.shift();
+              B_Accumulated_Day.shift();
+              E_Accumulated_Day.shift();
+              F_Accumulated_Day.shift();
+              J_Accumulated_Day.shift();
+              N_Accumulated_Day.shift();
+
+
+            }
+
+            counter3 = counter3 + 1
+
+
+            // updating legend text with updated y Value
+
+            chart9.options.data[0].legendText = " Meter A  " + yValue1 + "kWh";
+            chart9.options.data[1].legendText = " Meter B  " + yValue2 + "kWh";
+            chart9.options.data[2].legendText = " Meter E  " + yValue3 + "kWh";
+            chart9.options.data[3].legendText = " Meter F  " + yValue4 + "kWh";
+            chart9.options.data[4].legendText = " Meter J  " + yValue5 + "kWh";
+            chart9.options.data[5].legendText = " Meter N  " + yValue6 + "kWh";
+            chart9.render();
+
+
+          },
+        });
+      }
+
+      var pos1 = document.getElementById('output1');
+      var pos2 = document.getElementById('output2');
+      var pos3 = document.getElementById('output3');
+      var pos4 = document.getElementById('output4');
+
+      var pos5 = document.getElementById('output5');
+      var pos6 = document.getElementById('output6');
+
+      function getString() {
+
+        $.ajax({
+          type: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          url: $SCRIPT_ROOT,
+          success: function(response) {
+
+            var matches = response.match(/\[(.*?)\]/);
+
+            if (matches) {
+              var submatch = matches[1];
+            }
+
+            // submatch = the string between the square brackets [XXX] -> XXX
+
+            separate_list = submatch.split(', ') // Get the list of string representations of floats
+
+            final_string = separate_list[18]
+            finger_prediction = separate_list[19]
+            machine_state = "Printing State"
+
+
+
+
+
+            final_words = final_string.split(';')
+
+            if (final_words.length == 4){
+                          word4 = final_words[0].substring(1);
+            word3 = final_words[1];
+            word2 = final_words[2];
+            word1 = final_words[3].substring(0, final_words[3].length - 1);
+
+            }
+            else if (final_words.length == 3){
+                                      word4 = final_words[0].substring(1);
+            word3 = final_words[1];
+            word2 = final_words[2];
+            word1 = "[ERROR]: No Detection";
+
+            }
+            else if (final_words.length == 2){
+                                                  word4 = final_words[0].substring(1);
+            word3 = final_words[1];
+            word2 = "[ERROR]: No Detection";
+            word1 = "[ERROR]: No Detection";
+
+            }
+            else if (final_words.length == 1){
+                                                  word4 = final_words[0].substring(1);
+            word3 = "[ERROR]: No Detection";
+            word2 = "[ERROR]: No Detection";
+            word1 = "[ERROR]: No Detection";
+
+            }
+            else {
+                                                  word4 = "[ERROR]: No Detection";
+            word3 = "[ERROR]: No Detection";
+            word2 = "[ERROR]: No Detection";
+            word1 = "[ERROR]: No Detection";
+
+            }
+
+
+
+<!--            word4 = final_words[0].substring(1)-->
+<!--            word3 = final_words[1]-->
+<!--            word2 = final_words[2]-->
+<!--            word1 = final_words[3].substring(0, final_words[3].length - 1)-->
+
+<!--            word2 = "[ERROR]: No Detection"-->
+<!--            word1 = "[ERROR]: No Detection"-->
+
+            pos1.innerHTML = word1;
+            pos2.innerHTML = word2;
+            pos3.innerHTML = word3;
+            pos4.innerHTML = word4;
+
+
+
+
+
+            final_finger = finger_prediction.substring(1, finger_prediction.length - 1)
+
+            pos5.innerHTML = final_finger
+
+
+            pos6.innerHTML = machine_state
+
+          },
+        });
+      }
+
+
+      setInterval(function() {
+        updateChart()
+      }, updateInterval);
+
+      setInterval(function() {
+        updateChart2()
+      }, updateInterval2);
+
+      setInterval(function() {
+        updateChart3()
+      }, updateInterval3);
+
+      setInterval(function() {
+        getString()
+      }, 500);
+
+    }
+
+  </script>
+
+
+
+<html>
+
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="./static/index_files/bootstrap.min.css">
+    <script src="./static/index_files/jquery.min.js.下载"></script>
+    <script src="./static/index_files/bootstrap.min.js.下载"></script>
+    <title>
+      DOE Monitor
+    </title>
+    <div style="margin-top: 25px; margin-bottom: 25px; text-align: center; display: block;">
+      <a  href="http://localhost:8000" target="_blank" rel="noopener noreferrer">Home Page</a>
+    </div>
+    <div style="margin-top: 25px; margin-bottom: 25px; text-align: center; display: block;">
+      <a  href="http://localhost:8000/asem" target="_blank" rel="noopener noreferrer">Assembly System</a>
+    </div>
+      <div style="margin-top: 25px; margin-bottom: 25px; text-align: center; display: block;">
+      <a  href="http://localhost:8000/doem" target="_blank" rel="noopener noreferrer">DOE Monitor</a>
+    </div>
+  </head>
+
+  <body>
+    <div style="width:100%; margin:0 auto;">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12 col-xs-12" style="margin:0 auto">
+            <h1 style="text-align: center;">DOE Monitor Web System</h1>
+          </div>
+          <div class="clearfix visible-xs"></div>
+        </div>
+      </div>
+
+      <hr>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-4" style="margin:auto">
+            <div class="container" style="width:100%; height:auto; margin:0 auto;">
+              <div style=" text-align: center;">
+                <P>
+                  <button type="button" class="btn btn-info btn-lg" style="color: rgb(0, 0, 0);">
+                    Facility WebCAM
+                  </button>
+                </P>
+              </div>
+              <div>
+                <img style="width:100%;height:100%;margin:0 auto;" src="{{ url_for('video_feed_webcam') }}">
+              </div>
+            </div>
+          </div>
+          <div class=" col-lg-4" style="margin:auto">
+            <div class="container" style="width:100%;height:auto;margin:0 auto;">
+              <div style=" text-align: center;">
+                <P>
+                  <button type="button" class="btn btn-info btn-lg" style="color: rgb(0, 0, 0);">
+                    3D Printer Internal View
+                  </button>
+                </p>
+              </div>
+              <div class="clearfix visible-xs"></div>
+              <div>
+                <img style="width:100%;height:100%;margin:0 auto;" src="{{ url_for('video_feed_printer') }}">
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4" style="margin:auto">
+            <div class="container" style="width:100%;height:auto;margin:0 auto;">
+              <div style=" text-align: center;">
+                <P>
+                  <button type="button" class="btn btn-info btn-lg" style="color: rgb(0, 0, 0);">
+                    Worker's View
+                  </button>
+                </p>
+              </div>
+              <div>
+                <img style="width:100%;height:100%;margin:0 auto;" src="{{ url_for('video_feed_worker') }}">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr>
+
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-4" style="margin:auto">
+            <div class="container" style="width:100%; height:auto; margin:0 auto;">
+              <div style=" text-align: center;">
+                <P>
+                  <button type="button" class="btn btn-info btn-lg" style="color: rgb(0, 0, 0);">
+                    Object Being Predicted
+                  </button>
+                </P>
+              </div>
+              <div>
+                <img style="width:100%;height:100%;margin:0 auto;" src="{{ url_for('video_feed_uprint') }}">
+              </div>
+            </div>
+          </div>
+
+            <div class="container" style="width:100%; height:100%; margin:0 auto;">
+              <div class="row">
+                <div class="col-lg-4 col-xs-12" style="padding: 5px 15px 5px; text-align: center;">
+                  <form class="bs-example bs-example-form" role="form">
+                    <div class="input-group">
+                      <span class="input-group-addon">Predicted Machine State:</span>
+                      <span class="input-group-addon"><span id="output6"></span></span>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-4" style="margin:auto">
+            <div class="container" style="width:100%; height:auto; margin:0 auto;">
+              <div style=" text-align: center;">
+                <P>
+                  <button type="button" class="btn btn-info btn-lg" style="color: rgb(0, 0, 0);">
+                    Finger catch
+                  </button>
+                </P>
+              </div>
+              <div>
+                <img style="width:100%;height:100%;margin:0 auto;" src="{{ url_for('hand_recognition') }}">
+              </div>
+            </div>
+          </div>
+    <style>
+.input-group-addon {
+    min-width:300px;
+    text-align:middle;
+}
+    </style>
+          <div class="col-lg-8" style="margin:auto">
+            <div class="container" style="width:100%; height:auto; margin:0 auto;">
+              <div class="row">
+                <div class="col-lg-4 col-xs-12" style="padding: 5px 15px 5px; text-align: center;">
+                  <form class="bs-example bs-example-form" role="form">
+                    <div class="input-group">
+                      <span class="input-group-addon">Button 1 text:</span>
+                      <span class="input-group-addon"><span id="output1"></span></span>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-8" style="margin:auto">
+            <div class="container" style="width:100%; height:auto; margin:0 auto;">
+              <div class="row">
+                <div class="col-lg-4 col-xs-12" style="padding: 5px 15px 5px; text-align: center;">
+                  <form class="bs-example bs-example-form" role="form">
+                    <div class="input-group">
+                      <span class="input-group-addon">Button 2 text:</span>
+                      <span class="input-group-addon"><span id="output2"></span></span>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-8" style="margin:auto">
+            <div class="container" style="width:100%; height:auto; margin:0 auto;">
+              <div class="row">
+                <div class="col-lg-4 col-xs-12" style="padding: 5px 15px 5px; text-align: center;">
+                  <form class="bs-example bs-example-form" role="form">
+                    <div class="input-group">
+                      <span class="input-group-addon">Button 3 text:</span>
+                      <span class="input-group-addon"><span id="output3"></span></span>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-8" style="margin:auto">
+            <div class="container" style="width:100%; height:100%; margin:0 auto;">
+              <div class="row">
+                <div class="col-lg-4 col-xs-12" style="padding: 5px 15px 5px; text-align: center;">
+                  <form class="bs-example bs-example-form" role="form">
+                    <div class="input-group">
+                      <span class="input-group-addon">Button 4 text:</span>
+                      <span class="input-group-addon"><span id="output4"></span></span>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-8" style="margin:auto">
+            <div class="container" style="width:100%; height:100%; margin:0 auto;">
+              <div class="row">
+                <div class="col-lg-4 col-xs-12" style="padding: 5px 15px 5px; text-align: center;">
+                  <form class="bs-example bs-example-form" role="form">
+                    <div class="input-group">
+                      <span class="input-group-addon">Finger Position:</span>
+                      <span class="input-group-addon"><span id="output5"></span></span>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+
+<footer style="text-align: center;">
+  Copyright &copy; 2021 All Rights Reserved
+</footer>
+
+</html>
