@@ -83,7 +83,7 @@ In order to access the webpage-GUI on other computers that are not connected to 
 5. Other computers can enter the URL provided by ngrok to access the webpage-GUI in real-time (note that free connection lasts 2 hours and support only one connection per time)
 
 
-### Using "localtunnel" to forward webpage-GUI to other computers via the Internet (06/12/2021)
+### Recommended: using "localtunnel" to forward webpage-GUI to other computers via the Internet (06/12/2021)
 
 LocalTunnel is probably a better alternative to ngrok, since it is free and not limited in connection time.
 
@@ -93,9 +93,11 @@ LocalTunnel is probably a better alternative to ngrok, since it is free and not 
 
 ```
 lt -p 8000 -s [your customized subdomain name]
+
+e.g.: lt -p 8000 -s doemonitor
 ```
 
-
+4. Copy the URL given and enter it through any device connected to internet to access the DOE webpage-based monitor GUI. Note that you would need to keep the server (the Python file on the master device PC) running at all times. 
 
 
 
