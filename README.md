@@ -1,5 +1,11 @@
 # Project: Smart Connected Worker (SCW) - Version 1.0
 
+This is the research project **Smart Connected Worker (SCW)** funded by the Clean Energy Smart Manufacturing Innovation Institute (CESMII) and U.S. Department of Energy (DOE), supervised by **Professor Bingbing Li** of California State University, Northridge (CSUN), and managed by **Shijie Bian** of the University of California, Los Angeles (UCLA).
+
+The main goal of this project is to develop enabling technologies for establishing smart and connected infrastructure, to empower workers and operation supervisors in optimizing manufacturing workflow, which may allow us to improve energy efficiency and productivity in advanced manufacturing environments.
+
+
+
 ## Introduction and Overview
 
 
@@ -69,9 +75,9 @@ Here, you need to change the integer number according to the camera port number 
 
 ## Step 5: Customized Training
 
-For the training of the YOLO-based object detection model, follow this [Colab Notebook](https://colab.research.google.com/drive/1b9tqeVFkMeuDiKbXy1MkQ1w3IntuU11G?usp=sharing). Specifically, we are using the PyTorch implementation of the YOLO-V3 from this [GitHub](https://github.com/eriklindernoren/PyTorch-YOLOv3/tree/8eea432831a74d3cbeed4ecb79097db893ee8488). You need to collect at least 2000 image frames from the interior of your 3D printer, label them using the [Vott](https://github.com/microsoft/VoTT#download-and-install-a-release-package-for-your-platform-recommended) tool provided by Microsoft Visual Object Tagging Tool. Then, train the YOLO model following the procedure and guideline provided by the GitHub and Colab Notebook. Note that fine-tuning of model hyperparameters as well as providing a diverse dataset are recommended.
+For the training of the YOLO-based object detection model, follow this [Colab Notebook](https://colab.research.google.com/drive/1b9tqeVFkMeuDiKbXy1MkQ1w3IntuU11G?usp=sharing). Specifically, we are using the PyTorch implementation of the YOLO-V3 from this [GitHub](https://github.com/eriklindernoren/PyTorch-YOLOv3/tree/8eea432831a74d3cbeed4ecb79097db893ee8488). You need to collect at least 2000 image frames from the interior of your 3D printer, label them using the [Vott](https://github.com/microsoft/VoTT#download-and-install-a-release-package-for-your-platform-recommended) tool provided by Microsoft Visual Object Tagging Tool. Then, train the YOLO model following the procedure and guidelines provided by the GitHub and Colab Notebook. Note that fine-tuning of model hyperparameters as well as providing a diverse dataset are recommended.
 
-The module for text and finger detection/recognitions utilize pre-trained models that do not really need to be re-trained anymore. The Pytorch implementation of the CRAFT model is provided [here](https://github.com/clovaai/CRAFT-pytorch).
+The module for text and finger detection/recognitions utilize pre-trained models that do not need to be re-trained anymore. The Pytorch implementation of the CRAFT model is provided [here](https://github.com/clovaai/CRAFT-pytorch).
 
 The module for energy disaggregation is still currently under development. The training of the LSTM model can be referenced [here](https://github.com/minhup/Energy-Disaggregation) and this [secondary source](https://github.com/pipette/Electricity-load-disaggregation).
 
@@ -80,7 +86,7 @@ The module for energy disaggregation is still currently under development. The t
 
 ### 1. Using "ngrok" to forward webpage-GUI to other computers via the Internet (06/09/2021)
 
-In order to access the webpage-GUI on other computers that are not connected to the server/master device via a local network, we used the "ngrok" as an initial and hopefully temporary approach.
+To access the webpage-GUI on other computers that are not connected to the server/master device via a local network, we used the "ngrok" as an initial and hopefully temporary approach.
 
 1. Download ngrok [here](https://ngrok.com/download) and install.
 2. Add the environment of the ngrok.exe to your computer
@@ -103,13 +109,13 @@ lt -p 8000 -s [your customized subdomain name]
 e.g.: lt -p 8000 -s doemonitor
 ```
 
-4. Copy the URL given and enter it through any device connected to internet to access the DOE webpage-based monitor GUI. Note that you would need to keep the server (the Python file on the master device PC) running at all times. 
+4. Copy the URL given and enter it through any device connected to the internet to access the DOE web page-based monitor GUI. Note that you would need to keep the server (the Python file on the master device PC) running at all times. 
 
 
 ### 3. Updated GUI HTML template (06/23/2021)
 
-We provide a better alternative HTML template for the webpage-based GUI. The new templates are in the folder /templates/.
-In order to use these new templates, please go inside the **main.py** and perform the following changes:
+We provide a better alternative HTML template for the web page-based GUI. The new templates are in the folder /templates/.
+To use these new templates, please go inside the **main.py** and perform the following changes:
 
 Locate **line 175**:
 
@@ -145,17 +151,17 @@ I will put here some screenshots for the preview of the updated GUI:
 
 ![Screenshot](demo_images/energy_demo.png)
 
-The screenshot above shows that there are three sections on the top of the webpage: the **DOE Monitor** displays the real-time camera images, the processed images by the machine learning modules, as well as the predicted results of the machine learning modules; the **Energy Consumption Monitor** displays the dynamic line charts that monitors the energy consumption of the smart meters; the **Assembly System** displays the camera monitor of the assembly system - this part is still under construction.
+The screenshot above shows that there are three sections on the top of the webpage: the **DOE Monitor** displays the real-time camera images, the processed images by the machine learning modules, as well as the predicted results of the machine learning modules; the **Energy Consumption Monitor** displays the dynamic line charts that monitor the energy consumption of the smart meters; the **Assembly System** displays the camera monitor of the assembly system - this part is still under construction.
 
 
 ![Screenshot](demo_images/meters_demo.png)
 
-The screenshot above displays the dynamic line charts of the individual smart meter readings - all in real time.
+The screenshot above displays the dynamic line charts of the individual smart meter readings - all in real-time.
 
-So the updated GUI divides the webpage into three main sections, so that things will not be all piled up together.
+So the updated GUI divides the webpage into three main sections so that things will not be all piled up together.
 
 ## Acknowledgement
 
-This research is mainly supported by the Technical Roadmap Project "Establishing Smart Connected Workers Infrastructure for Enabling Advanced Manufacturing: A Pathway to Implement Smart Manufacturing for Small to Medium Sized Enterprises (SMEs)" funded by the Clean Energy Smart Manufacturing Innovation Institute (CESMII) sponsored through the U.S. Department of Energy's Office of Energy Efficiency and Renewable Energy (EERE) under the Advanced Manufacturing Office (Award Number UCLA: 20190511-16/DOE: DE-EE0007613).
+This research is mainly supported by the Technical Roadmap Project "Establishing Smart Connected Workers Infrastructure for Enabling Advanced Manufacturing: A Pathway to Implement Smart Manufacturing for Small to Medium-Sized Enterprises (SMEs)" funded by the Clean Energy Smart Manufacturing Innovation Institute (CESMII) sponsored through the U.S. Department of Energy's Office of Energy Efficiency and Renewable Energy (EERE) under the Advanced Manufacturing Office (Award Number UCLA: 20190511-16/DOE: DE-EE0007613).
 
 This research is also supported by the project "Autonomy Research Center for STEAHM" sponsored through the U.S. NASA MUREP Institutional Research Opportunity (MIRO) program (Award Number 80NSSC19M0200).
