@@ -128,7 +128,7 @@ def read_data():  # Save printer mode to a txt file on desktop
     if ser.is_open:
         ret = True
         count = write_port(ser, "trace c commandDetails on\n")
-        print("bytes written：", count)
+#         print("bytes written：", count)
         write_port(ser, "ss\n")
 
         while True:
@@ -148,7 +148,7 @@ def read_data():  # Save printer mode to a txt file on desktop
                     buffer1.append(x[-1])
                 else:
                     buffer1.append(x[-1])
-                print(buffer1[-1])
+#                 print(buffer1[-1])
                 # if len(buffer1) > 1:
                 # print("x: ", buffer1[0], buffer1[-1], len(buffer1))
                 # print(STRGLO, end="")
@@ -202,7 +202,7 @@ def meter_readings():
     #    write.writerows([[this_time, vars[0], vars[1], vars[2], vars[3], vars[4], vars[5], vars[6], vars[7], vars[8],
     #                      vars[9], vars[10], vars[11], vars[12], vars[13], vars[14], vars[15], vars[16], vars[17]]])
 
-    print("test-reach")
+#     print("test-reach")
     db.energydata.insert_one({"time": this_time,
                               "A_acc_energy": vars[0], "B_acc_energy": vars[1], "E_acc_energy": vars[2],
                               "F_acc_energy": vars[3], "J_acc_energy": vars[4], "N_acc_energy": vars[5],
@@ -210,8 +210,8 @@ def meter_readings():
                               "F_power": vars[9], "J_power": vars[10], "N_power": vars[11],
                               "A_current": vars[12], "B_current": [13], "E_current": vars[14],
                               "F_current": vars[15], "J_current": vars[16], "N_current": vars[17]})
-    print("test-wrote")
-    print(vars)
+#     print("test-wrote")
+#     print(vars)
     return (json.dumps(vars))
 
 
