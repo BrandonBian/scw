@@ -131,17 +131,8 @@ Change it into the following:
 
 ```
 @app.route('/')
-def index(): # Root: the energy dynamic line charts
-    #return render_template("index-1.html")
+def index(): # Render the new GUI template
     return render_template("sample.html")
-
-@app.route('/asem')
-def assembly(): # asem: assembly line images
-    return render_template("assembly.html")
-    
-@app.route('/doem')
-def doemonitor(): # doem: doe monitor (the cameras and the machine learning outputs)
-    return render_template("doe.html")
 ```
 
 In this updated GUI, there will be tags/buttons so that you can choose what information to display on the main site (instead of having all information displayed).
