@@ -2,14 +2,16 @@
 
 This is the research project **Smart Connected Worker (SCW)** funded by the Clean Energy Smart Manufacturing Innovation Institute (CESMII) and U.S. Department of Energy (DOE), supervised by **Professor Bingbing Li** of California State University, Northridge (CSUN), and managed by **Shijie Bian** of the University of California, Los Angeles (UCLA). Other contributors to this project include (affiliations based on year 2021): Chen Li (UCLA), Tiancheng Lin (UCLA), Yongwei Fu (CSUN), Ruitao Wu (CSUN), Tongzi Wu (UCLA), Mengrui Jiang (University of Columbia), Yutian Ren (UCI).
 
-
-
-The main goal of this project is to develop enabling technologies for establishing smart and connected infrastructure, to empower workers and operation supervisors in optimizing manufacturing workflow, which may allow us to improve energy efficiency and productivity in advanced manufacturing environments.
-
+**The main goal of this project is to develop enabling technologies for establishing smart and connected infrastructure, to empower workers and operation supervisors in optimizing manufacturing workflow, which may allow us to improve energy efficiency and productivity in advanced manufacturing environments.** In order to do so, we utilized machine learning algorithms related to object detection, text recognition, and reinforcement learning.
 
 
 ## Introduction and Overview
 
+This Smart Connected Worker (SCW) Project consists of three main machine learning-based modules (for more detailed information please refer to the individual GitHub projects): 
+
+1. The [object detection module](https://github.com/BrandonBian/SCW-object-detection) for real-time automated machine state monitoring and behavior supervision;
+2. The [finger and text recognition module](https://github.com/BrandonBian/SCW-finger-text-detection) for real-time human-machine interaction control in manufacturing systems;
+3. The energy disaggregation module (currently under development) for making real-time power consumption predictions.
 
 This is a demonstration of the finger and text recognition module, which automatically identifies the texts as well as the human's finger positions in real-time for the monitoring of human-machine interactions:
 
