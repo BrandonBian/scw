@@ -2,7 +2,7 @@
 
 This is the research project **Smart Connected Worker (SCW)** funded by the Clean Energy Smart Manufacturing Innovation Institute (CESMII) and U.S. Department of Energy (DOE), supervised by **Professor Bingbing Li** of California State University, Northridge (CSUN), and managed by **Shijie Bian** of the University of California, Los Angeles (UCLA). Other contributors to this project include (affiliations based on year 2021): Chen Li (UCLA), Tiancheng Lin (UCLA), Yongwei Fu (CSUN), Ruitao Wu (CSUN), Tongzi Wu (UCLA), Mengrui Jiang (University of Columbia), Yutian Ren (UCI).
 
-**The main goal of this project is to develop enabling technologies for establishing smart and connected infrastructure, to empower workers and operation supervisors in optimizing manufacturing workflow, which may allow us to improve energy efficiency and productivity in advanced manufacturing environments.** In order to do so, we utilized machine learning algorithms related to object detection, text recognition, and reinforcement learning.
+**The main goal of this project is to develop enabling technologies for establishing smart and connected infrastructure, to empower workers and operation supervisors in optimizing manufacturing workflow, which may allow us to improve energy efficiency and productivity in advanced manufacturing environments.** In order to do so, we utilized machine learning algorithms related to object detection, text recognition, and reinforcement learning. In high-level summary, we built an automated system for real-time workplace monitoring and information analysis, as well as a web-based graphical user interface for centralized data visualization and analysis.
 
 
 ## Introduction and Overview
