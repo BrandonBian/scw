@@ -13,9 +13,7 @@ This Smart Connected Worker (SCW) Project consists of three main machine learnin
 2. The [finger and text recognition module](https://github.com/BrandonBian/SCW-finger-text-detection) for real-time human-machine interaction control in manufacturing systems;
 3. The energy disaggregation module (currently under development) for making real-time power consumption predictions.
 
-This is a demonstration of the finger and text recognition module, which automatically identifies the texts as well as the human's finger positions in real-time for the monitoring of human-machine interactions:
-
-![GIF](demo_images/finger_detection_demo.gif)
+![GIF](demo_images/entire_demo.gif)
 
 ## Step 1: Installation
 
