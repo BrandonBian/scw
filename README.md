@@ -1,6 +1,6 @@
 # Project: Smart Connected Worker (SCW) - Version 1.0
 
-This is the research project **Smart Connected Worker (SCW)** funded by the Clean Energy Smart Manufacturing Innovation Institute (CESMII) and U.S. Department of Energy (DOE), supervised by **Professor Bingbing Li** of California State University, Northridge (CSUN), and managed by **Shijie Bian** of the University of California, Los Angeles (UCLA). Other contributors to this project include (affiliations based on year 2021): Chen Li (UCLA), Tiancheng Lin (UCLA), Yongwei Fu (CSUN), Ruitao Wu (CSUN), Tongzi Wu (UCLA), Mengrui Jiang (University of Columbia), Yutian Ren (UCI).
+This is the research project **Smart Connected Worker (SCW)** funded by the Clean Energy Smart Manufacturing Innovation Institute (CESMII) and U.S. Department of Energy (DOE), supervised by **Professor Bingbing Li** of California State University, Northridge (CSUN), and managed by **Shijie Bian** of the University of California, Los Angeles (UCLA). Other contributors to this project include (affiliations based on year 2021): Chen Li (UCLA), Tiancheng Lin (UCLA), Yongwei Fu (CSUN), Ruitao Wu (CSUN), Tongzi Wu (UCLA), Mengrui Jiang (University of Columbia), Yutian Ren (UCI). This project has been published in the [Journal of Manufacturing Systems](https://www.sciencedirect.com/science/article/pii/S0278612521001813).
 
 **The main goal of this project is to develop enabling technologies for establishing smart and connected infrastructure, to empower workers and operation supervisors in optimizing manufacturing workflow, which may allow us to improve energy efficiency and productivity in advanced manufacturing environments.** In order to do so, we utilized machine learning algorithms related to object detection, text recognition, and reinforcement learning. In high-level summary, we built an automated system for real-time workplace monitoring and information analysis, as well as a web-based graphical user interface for centralized data visualization and analysis.
 
@@ -158,3 +158,23 @@ So the updated GUI divides the webpage into three main sections so that things w
 This research is mainly supported by the Technical Roadmap Project "Establishing Smart Connected Workers Infrastructure for Enabling Advanced Manufacturing: A Pathway to Implement Smart Manufacturing for Small to Medium-Sized Enterprises (SMEs)" funded by the Clean Energy Smart Manufacturing Innovation Institute (CESMII) sponsored through the U.S. Department of Energy's Office of Energy Efficiency and Renewable Energy (EERE) under the Advanced Manufacturing Office (Award Number UCLA: 20190511-16/DOE: DE-EE0007613).
 
 This research is also supported by the project "Autonomy Research Center for STEAHM" sponsored through the U.S. NASA MUREP Institutional Research Opportunity (MIRO) program (Award Number 80NSSC19M0200).
+
+## Other Information
+
+If you find this project to be useful, please consider citing [our paper](https://www.sciencedirect.com/science/article/pii/S0278612521001813):
+
+```
+@article{BIAN202166,
+title = {Machine learning-based real-time monitoring system for smart connected worker to improve energy efficiency},
+journal = {Journal of Manufacturing Systems},
+volume = {61},
+pages = {66-76},
+year = {2021},
+issn = {0278-6125},
+doi = {https://doi.org/10.1016/j.jmsy.2021.08.009},
+url = {https://www.sciencedirect.com/science/article/pii/S0278612521001813},
+author = {Shijie Bian and Chen Li and Yongwei Fu and Yutian Ren and Tongzi Wu and Guann-Pyng Li and Bingbing Li},
+keywords = {Smart connected worker, Machine learning, Real-time monitoring, Object detection, Text recognition, Energy disaggregation},
+abstract = {Recent advances in machine learning and computer vision brought to light technologies and algorithms that serve as new opportunities for creating intelligent and efficient manufacturing systems. In this study, the real-time monitoring system of manufacturing workflow for the Smart Connected Worker (SCW) is developed for the small and medium-sized manufacturers (SMMs), which integrates state-of-the-art machine learning techniques with the workplace scenarios of advanced manufacturing systems. Specifically, object detection and text recognition models are investigated and adopted to ameliorate the labor-intensive machine state monitoring process, while artificial neural networks are introduced to enable real-time energy disaggregation for further optimization. The developed system achieved efficient supervision and accurate information analysis in real-time for prolonged working conditions, which could effectively reduce the cost related to human labor, as well as provide an affordable solution for SMMs. The competent experiment results also demonstrated the feasibility and effectiveness of integrating machine learning technologies into the realm of advanced manufacturing systems.}
+}
+```
