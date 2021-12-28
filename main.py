@@ -1,74 +1,36 @@
+"""Importing Section"""
+
 from __future__ import division
 
 from sklearn.cluster import KMeans
 import string
-import sys
-import os
-import time
-import argparse
-
-import torch
-import torch.nn as nn
 import torch.backends.cudnn as cudnn
-from torch.autograd import Variable
-import torch.nn.functional as F
 from datetime import datetime
-
-from difflib import SequenceMatcher
-
-from PIL import Image
-
-import cv2
-import numpy as np
 import craft_utils
 import imgproc
-
 from craft import CRAFT
 from color_utils import CTCLabelConverter, AttnLabelConverter
-from dataset import RawDataset, AlignCollate, ResizeNormalize
+from dataset import ResizeNormalize
 from model import Model
-import csv
-
-from flask import Flask, render_template, Response
-import cv2
 import json
-import struct
-import time
-
 
 from models import *
 from utils.utils import *
 from utils.datasets import *
 from utils.smartmeter_modbus import *
 
-import os
-import sys
-import time
-
 import argparse
-import cv2
-
 from PIL import Image
-
 import torch
-from torch.utils.data import DataLoader
-from torchvision import datasets
 from torch.autograd import Variable
-
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
-from matplotlib.ticker import NullLocator
-
 from flask import Flask, render_template, Response
 import cv2
 import serial
 import time
 import imagezmq
 import threading
-import socket
-
 from queue import Queue
-
 import pymongo
 
 db = pymongo.MongoClient("localhost", 27017).energy
@@ -121,7 +83,7 @@ def read_data():  # Save printer mode to a txt file on desktop
                 if len(buffer1) > 1:
                     buffer1.pop(0)
                     buffer1.append(x[-1])
-                else:
+
 
 
 def open_port(portx, bps, timeout):
