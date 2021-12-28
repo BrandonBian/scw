@@ -3,30 +3,60 @@
 from __future__ import division
 
 from sklearn.cluster import KMeans
-
+import string
+import torch.backends.cudnn as cudnn
 from datetime import datetime
 import craft_utils
 import imgproc
-
+from craft import CRAFT
+from color_utils import CTCLabelConverter, AttnLabelConverter
 from dataset import ResizeNormalize
-
+from model import Model
 import json
 
+from models import *
 from utils.utils import *
 from utils.datasets import *
 from utils.smartmeter_modbus import *
-from utils.globals import *
 
+import argparse
 from PIL import Image
 import torch
 from torch.autograd import Variable
 import matplotlib.pyplot as plt
-from flask import render_template, Response
+from flask import Flask, render_template, Response
+import cv2
 import serial
 import time
 import imagezmq
 import threading
 from queue import Queue
+import pymongo
+
+db = pymongo.MongoClient("localhost", 27017).energy
+
+MAX_OUTPUT_NUM = 5
+
+app = Flask(__name__)
+
+# All the possible words corresponding to the button/text-box number
+words1 = ["Continue", "Load", "System...", "Head...", "Right", "Forward", "Up", "Set Network...", "Static IP...",
+          "Increment", "Yes", "Start Model", "Pause",
+          "Lights always on", "Lights normal", "Deutsch", "Resume"]
+words2 = ["Material...", "Unload...", "Load Model", "Setup...", "Gantry...", "Left", "Backward", "Down", "Reverse",
+          "Dynamic IP...", "Test Parts...", "Lights off",
+          "Next Digit", "Disable UpnP", "Enable UpnP", "English", "Stop", "No"]
+words3 = ["Standby Mode...", "Machine...", "Tip...", "Select Axis", "Select Drive", "Load Upgrade...", "Last Digit",
+          "Select Language...", "Espanol", "Show Time"]
+words4 = ["Maintenance...", "Done...", "Cancel", "Next...", "Auto Powerdown"]
+
+global_predict_string = None
+global_finger_string = None
+global_machine_state = None
+
+STRGLO = ""
+BOOL = True
+StrTemp = ""
 
 
 def read_data():  # Save printer mode to a txt file on desktop
@@ -53,6 +83,7 @@ def read_data():  # Save printer mode to a txt file on desktop
                 if len(buffer1) > 1:
                     buffer1.pop(0)
                     buffer1.append(x[-1])
+
 
 
 def open_port(portx, bps, timeout):
@@ -94,6 +125,7 @@ def meter_readings():
 
     this_time = [datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]]
 
+
     db.energydata.insert_one({"time": this_time,
                               "A_acc_energy": vars[0], "B_acc_energy": vars[1], "E_acc_energy": vars[2],
                               "F_acc_energy": vars[3], "J_acc_energy": vars[4], "N_acc_energy": vars[5],
@@ -105,8 +137,16 @@ def meter_readings():
     return (json.dumps(vars))
 
 
+worker_camera = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+printer_camera = cv2.VideoCapture(3, cv2.CAP_DSHOW)
+web_camera = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+
+
 def worker_predict_image():
     ret, frame = worker_camera.read()
+
+    # cv2.imwrite('frame.jpg', frame)
+    # cv2.waitKey(1)
 
     if ret == True:
         _, this_frame = cv2.imencode('.jpg', frame)
@@ -291,6 +331,24 @@ def webcam_get_frame():
     return jpeg.tobytes()
 
 
+machine_states_record = []
+current_machine_state = "Initialized"
+
+# Globals # Initialized -> Testing -> Calibration -> Heating -> Printing -> Ending
+Transition_states = {
+    "Initialized": "Testing",
+    "Testing": "Calibration",
+    "Calibration": "Heating",
+    "Heating": "Printing",
+    "Printing": "Ending",
+    "Ending": "Ending",
+    "ERROR: PLEASE INITIALIZE PRINTER": "Initialized",
+    "ERROR: PRINTER NOT IN INITIALIZED POSITION: BuildPlate": "Initialized",
+    "ERROR: PRINTER NOT IN INITIALIZED POSITION: Extruder": "Initialized",
+    "ERROR: PRINTER NOT IN INITIALIZED POSITION: Extruder Not Detected / Initialized": "Initialized",
+}
+
+
 class History:
     def __init__(self):
         self.q = list([False, False, False, False, False])
@@ -313,6 +371,8 @@ class History:
 Short_history = History()
 
 
+# Tolerance = 0
+
 def transition_criterion(axis_left_x, extruder_left_x, extruder_left_y, extruder_right_x, extruder_right_y,
                          extruder_center_x,
                          buildplate_top_y, cur_state, tolerance=10):
@@ -330,6 +390,7 @@ def transition_criterion(axis_left_x, extruder_left_x, extruder_left_y, extruder
     # print("Axis left: ", axis_left_x)
 
     # Extruder at far-left: extruder_left_y < 260 and > 250 (height); extruder_left_x < 150 and > 140; right_x < 265 and > 255
+
 
     if current_machine_state == "Initialized":
         if not (extruder_left_y < 260 and extruder_left_y > 250 and extruder_left_x < 150 and extruder_left_x > 140 and \
@@ -368,6 +429,7 @@ def printer_predict_image():
 
     ret, frame = printer_camera.read()  #
 
+
     if ret != True:
         print("Error getting printer interior output")
 
@@ -399,6 +461,7 @@ def printer_predict_image():
     # Bounding-box colors
     cmap = plt.get_cmap("tab20b")
 
+
     # Iterate through images and save plot of detections
     for img_i, (path, detections) in enumerate(zip(imgs, img_detections)):
 
@@ -408,6 +471,7 @@ def printer_predict_image():
         axis_x, axis_y, buildplate_bottom_x, buildplate_bottom_y, extruder_left_x, extruder_left_y, axis_left_x = 0, 0, 0, 0, 0, 0, 0
         extruder_right_x, extruder_right_y, buildplate_top_y = 0, 0, 0
         extruder_center_x = 0
+
 
         # Draw bounding boxes and labels of detections
         if detections is not None:
@@ -652,115 +716,11 @@ def support_side():
 
 
 ###################################################################################################################################
-def test_net(net, image, text_threshold, link_threshold, low_text, cuda, poly, refine_net=None):
-    t0 = time.time()
 
-    # resize
-    img_resized, target_ratio, size_heatmap = imgproc.resize_aspect_ratio(image, args.canvas_size,
-                                                                          interpolation=cv2.INTER_LINEAR,
-                                                                          mag_ratio=args.mag_ratio)
-    ratio_h = ratio_w = 1 / target_ratio
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    # preprocessing
-    x = imgproc.normalizeMeanVariance(img_resized)
-    x = torch.from_numpy(x).permute(2, 0, 1)  # [h, w, c] to [c, h, w]
-    x = Variable(x.unsqueeze(0))  # [c, h, w] to [b, c, h, w]
-    if cuda:
-        x = x.cuda()
+from collections import OrderedDict
 
-    # forward pass
-    with torch.no_grad():
-        y, feature = net(x)
-
-    # make score and link map
-    score_text = y[0, :, :, 0].cpu().data.numpy()
-    score_link = y[0, :, :, 1].cpu().data.numpy()
-
-    # refine link
-    if refine_net is not None:
-        with torch.no_grad():
-            y_refiner = refine_net(y, feature)
-        score_link = y_refiner[0, :, :, 0].cpu().data.numpy()
-
-    t0 = time.time() - t0
-    t1 = time.time()
-
-    # Post-processing
-    boxes, polys = craft_utils.getDetBoxes(score_text, score_link, text_threshold, link_threshold, low_text, poly)
-
-    # coordinate adjustment
-    boxes = craft_utils.adjustResultCoordinates(boxes, ratio_w, ratio_h)
-    polys = craft_utils.adjustResultCoordinates(polys, ratio_w, ratio_h)
-    for k in range(len(polys)):
-        if polys[k] is None: polys[k] = boxes[k]
-
-    t1 = time.time() - t1
-
-    # render results (optional)
-    render_img = score_text.copy()
-    render_img = np.hstack((render_img, score_link))
-    ret_score_text = imgproc.cvt2HeatmapImg(render_img)
-
-    # if args.show_time: print("\ninfer/postproc time : {:.3f}/{:.3f}".format(t0, t1))
-
-    return boxes, polys, ret_score_text
-
-
-def demo(opt, roi, button=False):
-    predict_list = []
-    with torch.no_grad():
-        batch_size = roi.size(0)
-        image = roi.to(device)
-        # For max length prediction
-        length_for_pred = torch.IntTensor([opt.batch_max_length] * batch_size).to(device)
-        text_for_pred = torch.LongTensor(batch_size, opt.batch_max_length + 1).fill_(0).to(device)
-
-        if 'CTC' in opt.Prediction:
-            preds = model(image, text_for_pred)
-
-            # Select max probabilty (greedy decoding) then decode index to character
-            preds_size = torch.IntTensor([preds.size(1)] * batch_size)
-            _, preds_index = preds.max(2)
-            # preds_index = preds_index.view(-1)
-            preds_str = converter.decode(preds_index, preds_size)
-
-        else:
-            preds = model(image, text_for_pred, is_train=False)
-
-            # select max probabilty (greedy decoding) then decode index to character
-            _, preds_index = preds.max(2)
-            preds_str = converter.decode(preds_index, length_for_pred)
-
-        # log = open(f'./log_demo_result.txt', 'a')
-        dashed_line = '-' * 80
-
-        if button:
-            head = f'{"predicted_labels":25s}\tconfidence score\tFinger On Button: TRUE'
-        else:
-            head = f'{"predicted_labels":25s}\tconfidence score\tFinger On Button: FALSE'
-
-        preds_prob = F.softmax(preds, dim=2)
-        preds_max_prob, _ = preds_prob.max(dim=2)
-
-        for pred, pred_max_prob in zip(preds_str, preds_max_prob):
-            if 'Attn' in opt.Prediction:
-                pred_EOS = pred.find('[s]')
-                pred = pred[:pred_EOS]  # prune after "end of sentence" token ([s])
-                pred_max_prob = pred_max_prob[:pred_EOS]
-
-            # calculate confidence score (= multiply of pred_max_prob)
-            confidence_score = pred_max_prob.cumprod(dim=0)[-1]
-
-            # print(f'\t{pred:25s}\t{confidence_score:0.4f}')
-
-            predict_list.append(pred)
-        return (predict_list)
-
-
-
-
-def str2bool(v):
-    return v.lower() in ("yes", "y", "true", "t", "1")
 
 def copyStateDict(state_dict):
     if list(state_dict.keys())[0].startswith("module"):
@@ -773,7 +733,11 @@ def copyStateDict(state_dict):
         new_state_dict[name] = v
     return new_state_dict
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+def str2bool(v):
+    return v.lower() in ("yes", "y", "true", "t", "1")
+
+
 parser = argparse.ArgumentParser(description='CRAFT Text Detection')
 parser.add_argument('--trained_model', default='weights/craft_mlt_25k.pth', type=str, help='pretrained model')
 parser.add_argument('--text_threshold', default=0.7, type=float, help='text confidence threshold')
@@ -907,8 +871,116 @@ else:
 
 printer_model.eval()  # Set in evaluation mode
 
+def test_net(net, image, text_threshold, link_threshold, low_text, cuda, poly, refine_net=None):
+    t0 = time.time()
+
+    # resize
+    img_resized, target_ratio, size_heatmap = imgproc.resize_aspect_ratio(image, args.canvas_size,
+                                                                          interpolation=cv2.INTER_LINEAR,
+                                                                          mag_ratio=args.mag_ratio)
+    ratio_h = ratio_w = 1 / target_ratio
+
+    # preprocessing
+    x = imgproc.normalizeMeanVariance(img_resized)
+    x = torch.from_numpy(x).permute(2, 0, 1)  # [h, w, c] to [c, h, w]
+    x = Variable(x.unsqueeze(0))  # [c, h, w] to [b, c, h, w]
+    if cuda:
+        x = x.cuda()
+
+    # forward pass
+    with torch.no_grad():
+        y, feature = net(x)
+
+    # make score and link map
+    score_text = y[0, :, :, 0].cpu().data.numpy()
+    score_link = y[0, :, :, 1].cpu().data.numpy()
+
+    # refine link
+    if refine_net is not None:
+        with torch.no_grad():
+            y_refiner = refine_net(y, feature)
+        score_link = y_refiner[0, :, :, 0].cpu().data.numpy()
+
+    t0 = time.time() - t0
+    t1 = time.time()
+
+    # Post-processing
+    boxes, polys = craft_utils.getDetBoxes(score_text, score_link, text_threshold, link_threshold, low_text, poly)
+
+    # coordinate adjustment
+    boxes = craft_utils.adjustResultCoordinates(boxes, ratio_w, ratio_h)
+    polys = craft_utils.adjustResultCoordinates(polys, ratio_w, ratio_h)
+    for k in range(len(polys)):
+        if polys[k] is None: polys[k] = boxes[k]
+
+    t1 = time.time() - t1
+
+    # render results (optional)
+    render_img = score_text.copy()
+    render_img = np.hstack((render_img, score_link))
+    ret_score_text = imgproc.cvt2HeatmapImg(render_img)
+
+    # if args.show_time: print("\ninfer/postproc time : {:.3f}/{:.3f}".format(t0, t1))
+
+    return boxes, polys, ret_score_text
+
+
+def demo(opt, roi, button=False):
+    predict_list = []
+    with torch.no_grad():
+        batch_size = roi.size(0)
+        image = roi.to(device)
+        # For max length prediction
+        length_for_pred = torch.IntTensor([opt.batch_max_length] * batch_size).to(device)
+        text_for_pred = torch.LongTensor(batch_size, opt.batch_max_length + 1).fill_(0).to(device)
+
+        if 'CTC' in opt.Prediction:
+            preds = model(image, text_for_pred)
+
+            # Select max probabilty (greedy decoding) then decode index to character
+            preds_size = torch.IntTensor([preds.size(1)] * batch_size)
+            _, preds_index = preds.max(2)
+            # preds_index = preds_index.view(-1)
+            preds_str = converter.decode(preds_index, preds_size)
+
+        else:
+            preds = model(image, text_for_pred, is_train=False)
+
+            # select max probabilty (greedy decoding) then decode index to character
+            _, preds_index = preds.max(2)
+            preds_str = converter.decode(preds_index, length_for_pred)
+
+        # log = open(f'./log_demo_result.txt', 'a')
+        dashed_line = '-' * 80
+
+        if button:
+            head = f'{"predicted_labels":25s}\tconfidence score\tFinger On Button: TRUE'
+        else:
+            head = f'{"predicted_labels":25s}\tconfidence score\tFinger On Button: FALSE'
+
+        # print(f'{dashed_line}\n{head}\n{dashed_line}')
+        # log.write(f'{dashed_line}\n{head}\n{dashed_line}\n')
+
+        preds_prob = F.softmax(preds, dim=2)
+        preds_max_prob, _ = preds_prob.max(dim=2)
+
+        for pred, pred_max_prob in zip(preds_str, preds_max_prob):
+            if 'Attn' in opt.Prediction:
+                pred_EOS = pred.find('[s]')
+                pred = pred[:pred_EOS]  # prune after "end of sentence" token ([s])
+                pred_max_prob = pred_max_prob[:pred_EOS]
+
+            # calculate confidence score (= multiply of pred_max_prob)
+            confidence_score = pred_max_prob.cumprod(dim=0)[-1]
+
+            # print(f'\t{pred:25s}\t{confidence_score:0.4f}')
+
+            predict_list.append(pred)
+        return (predict_list)
+
 
 if __name__ == '__main__':
+
     print("Webpage Program Loading...")
 
     trigger = 0
