@@ -18,41 +18,20 @@ from models import *
 from utils.utils import *
 from utils.datasets import *
 from utils.smartmeter_modbus import *
+from utils.globals import *
 
 import argparse
 from PIL import Image
 import torch
 from torch.autograd import Variable
 import matplotlib.pyplot as plt
-from flask import Flask, render_template, Response
-import cv2
+from flask import render_template, Response
 import serial
 import time
 import imagezmq
 import threading
 from queue import Queue
-import pymongo
 
-db = pymongo.MongoClient("localhost", 27017).energy
-
-MAX_OUTPUT_NUM = 5
-
-app = Flask(__name__)
-
-# All the possible words corresponding to the button/text-box number
-words1 = ["Continue", "Load", "System...", "Head...", "Right", "Forward", "Up", "Set Network...", "Static IP...",
-          "Increment", "Yes", "Start Model", "Pause",
-          "Lights always on", "Lights normal", "Deutsch", "Resume"]
-words2 = ["Material...", "Unload...", "Load Model", "Setup...", "Gantry...", "Left", "Backward", "Down", "Reverse",
-          "Dynamic IP...", "Test Parts...", "Lights off",
-          "Next Digit", "Disable UpnP", "Enable UpnP", "English", "Stop", "No"]
-words3 = ["Standby Mode...", "Machine...", "Tip...", "Select Axis", "Select Drive", "Load Upgrade...", "Last Digit",
-          "Select Language...", "Espanol", "Show Time"]
-words4 = ["Maintenance...", "Done...", "Cancel", "Next...", "Auto Powerdown"]
-
-global_predict_string = None
-global_finger_string = None
-global_machine_state = None
 
 STRGLO = ""
 BOOL = True
@@ -83,7 +62,6 @@ def read_data():  # Save printer mode to a txt file on desktop
                 if len(buffer1) > 1:
                     buffer1.pop(0)
                     buffer1.append(x[-1])
-
 
 
 def open_port(portx, bps, timeout):
@@ -125,7 +103,6 @@ def meter_readings():
 
     this_time = [datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]]
 
-
     db.energydata.insert_one({"time": this_time,
                               "A_acc_energy": vars[0], "B_acc_energy": vars[1], "E_acc_energy": vars[2],
                               "F_acc_energy": vars[3], "J_acc_energy": vars[4], "N_acc_energy": vars[5],
@@ -135,11 +112,6 @@ def meter_readings():
                               "F_current": vars[15], "J_current": vars[16], "N_current": vars[17]})
 
     return (json.dumps(vars))
-
-
-worker_camera = cv2.VideoCapture(0, cv2.CAP_DSHOW)
-printer_camera = cv2.VideoCapture(3, cv2.CAP_DSHOW)
-web_camera = cv2.VideoCapture(1, cv2.CAP_DSHOW)
 
 
 def worker_predict_image():
@@ -331,24 +303,6 @@ def webcam_get_frame():
     return jpeg.tobytes()
 
 
-machine_states_record = []
-current_machine_state = "Initialized"
-
-# Globals # Initialized -> Testing -> Calibration -> Heating -> Printing -> Ending
-Transition_states = {
-    "Initialized": "Testing",
-    "Testing": "Calibration",
-    "Calibration": "Heating",
-    "Heating": "Printing",
-    "Printing": "Ending",
-    "Ending": "Ending",
-    "ERROR: PLEASE INITIALIZE PRINTER": "Initialized",
-    "ERROR: PRINTER NOT IN INITIALIZED POSITION: BuildPlate": "Initialized",
-    "ERROR: PRINTER NOT IN INITIALIZED POSITION: Extruder": "Initialized",
-    "ERROR: PRINTER NOT IN INITIALIZED POSITION: Extruder Not Detected / Initialized": "Initialized",
-}
-
-
 class History:
     def __init__(self):
         self.q = list([False, False, False, False, False])
@@ -391,7 +345,6 @@ def transition_criterion(axis_left_x, extruder_left_x, extruder_left_y, extruder
 
     # Extruder at far-left: extruder_left_y < 260 and > 250 (height); extruder_left_x < 150 and > 140; right_x < 265 and > 255
 
-
     if current_machine_state == "Initialized":
         if not (extruder_left_y < 260 and extruder_left_y > 250 and extruder_left_x < 150 and extruder_left_x > 140 and \
                 extruder_right_x > 255 and extruder_right_x < 265):
@@ -429,7 +382,6 @@ def printer_predict_image():
 
     ret, frame = printer_camera.read()  #
 
-
     if ret != True:
         print("Error getting printer interior output")
 
@@ -461,7 +413,6 @@ def printer_predict_image():
     # Bounding-box colors
     cmap = plt.get_cmap("tab20b")
 
-
     # Iterate through images and save plot of detections
     for img_i, (path, detections) in enumerate(zip(imgs, img_detections)):
 
@@ -471,7 +422,6 @@ def printer_predict_image():
         axis_x, axis_y, buildplate_bottom_x, buildplate_bottom_y, extruder_left_x, extruder_left_y, axis_left_x = 0, 0, 0, 0, 0, 0, 0
         extruder_right_x, extruder_right_y, buildplate_top_y = 0, 0, 0
         extruder_center_x = 0
-
 
         # Draw bounding boxes and labels of detections
         if detections is not None:
@@ -871,6 +821,7 @@ else:
 
 printer_model.eval()  # Set in evaluation mode
 
+
 def test_net(net, image, text_threshold, link_threshold, low_text, cuda, poly, refine_net=None):
     t0 = time.time()
 
@@ -980,7 +931,6 @@ def demo(opt, roi, button=False):
 
 
 if __name__ == '__main__':
-
     print("Webpage Program Loading...")
 
     trigger = 0
@@ -996,4 +946,3 @@ if __name__ == '__main__':
                                           "threaded": True, "use_reloader": False})
     streamingP.start()
     open_port("COM3", 38400, None)
-
