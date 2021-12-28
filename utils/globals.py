@@ -33,7 +33,7 @@ global_predict_string = None
 global_finger_string = None
 global_machine_state = None
 
-# Database and Flask Handlers
+# Database Handler
 db = pymongo.MongoClient("localhost", 27017).energy
 
 # Recording Machine States

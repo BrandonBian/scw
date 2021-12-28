@@ -3,24 +3,17 @@
 from __future__ import division
 
 from sklearn.cluster import KMeans
-import string
-import torch.backends.cudnn as cudnn
 from datetime import datetime
 import craft_utils
 import imgproc
-from craft import CRAFT
-from color_utils import CTCLabelConverter, AttnLabelConverter
 from dataset import ResizeNormalize
-from model import Model
 import json
 
-from models import *
 from utils.utils import *
 from utils.datasets import *
 from utils.smartmeter_modbus import *
 from utils.globals import *
 
-import argparse
 from PIL import Image
 import torch
 from torch.autograd import Variable
@@ -32,9 +25,9 @@ import time
 import imagezmq
 import threading
 from queue import Queue
-import pymongo
 
 app = Flask(__name__)
+
 
 def read_data():  # Save printer mode to a txt file on desktop
 
@@ -60,7 +53,6 @@ def read_data():  # Save printer mode to a txt file on desktop
                 if len(buffer1) > 1:
                     buffer1.pop(0)
                     buffer1.append(x[-1])
-
 
 
 def open_port(portx, bps, timeout):
@@ -102,7 +94,6 @@ def meter_readings():
 
     this_time = [datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]]
 
-
     db.energydata.insert_one({"time": this_time,
                               "A_acc_energy": vars[0], "B_acc_energy": vars[1], "E_acc_energy": vars[2],
                               "F_acc_energy": vars[3], "J_acc_energy": vars[4], "N_acc_energy": vars[5],
@@ -116,9 +107,6 @@ def meter_readings():
 
 def worker_predict_image():
     ret, frame = worker_camera.read()
-
-    # cv2.imwrite('frame.jpg', frame)
-    # cv2.waitKey(1)
 
     if ret == True:
         _, this_frame = cv2.imencode('.jpg', frame)
@@ -302,6 +290,7 @@ def webcam_get_frame():
     ret, jpeg = cv2.imencode('.jpg', image)
     return jpeg.tobytes()
 
+
 class History:
     def __init__(self):
         self.q = list([False, False, False, False, False])
@@ -324,8 +313,6 @@ class History:
 Short_history = History()
 
 
-# Tolerance = 0
-
 def transition_criterion(axis_left_x, extruder_left_x, extruder_left_y, extruder_right_x, extruder_right_y,
                          extruder_center_x,
                          buildplate_top_y, cur_state, tolerance=10):
@@ -343,7 +330,6 @@ def transition_criterion(axis_left_x, extruder_left_x, extruder_left_y, extruder
     # print("Axis left: ", axis_left_x)
 
     # Extruder at far-left: extruder_left_y < 260 and > 250 (height); extruder_left_x < 150 and > 140; right_x < 265 and > 255
-
 
     if current_machine_state == "Initialized":
         if not (extruder_left_y < 260 and extruder_left_y > 250 and extruder_left_x < 150 and extruder_left_x > 140 and \
@@ -382,7 +368,6 @@ def printer_predict_image():
 
     ret, frame = printer_camera.read()  #
 
-
     if ret != True:
         print("Error getting printer interior output")
 
@@ -414,7 +399,6 @@ def printer_predict_image():
     # Bounding-box colors
     cmap = plt.get_cmap("tab20b")
 
-
     # Iterate through images and save plot of detections
     for img_i, (path, detections) in enumerate(zip(imgs, img_detections)):
 
@@ -424,7 +408,6 @@ def printer_predict_image():
         axis_x, axis_y, buildplate_bottom_x, buildplate_bottom_y, extruder_left_x, extruder_left_y, axis_left_x = 0, 0, 0, 0, 0, 0, 0
         extruder_right_x, extruder_right_y, buildplate_top_y = 0, 0, 0
         extruder_center_x = 0
-
 
         # Draw bounding boxes and labels of detections
         if detections is not None:
@@ -750,16 +733,10 @@ def demo(opt, roi, button=False):
             _, preds_index = preds.max(2)
             preds_str = converter.decode(preds_index, length_for_pred)
 
-        # log = open(f'./log_demo_result.txt', 'a')
-        dashed_line = '-' * 80
-
         if button:
             head = f'{"predicted_labels":25s}\tconfidence score\tFinger On Button: TRUE'
         else:
             head = f'{"predicted_labels":25s}\tconfidence score\tFinger On Button: FALSE'
-
-        # print(f'{dashed_line}\n{head}\n{dashed_line}')
-        # log.write(f'{dashed_line}\n{head}\n{dashed_line}\n')
 
         preds_prob = F.softmax(preds, dim=2)
         preds_max_prob, _ = preds_prob.max(dim=2)
@@ -770,17 +747,11 @@ def demo(opt, roi, button=False):
                 pred = pred[:pred_EOS]  # prune after "end of sentence" token ([s])
                 pred_max_prob = pred_max_prob[:pred_EOS]
 
-            # calculate confidence score (= multiply of pred_max_prob)
-            confidence_score = pred_max_prob.cumprod(dim=0)[-1]
-
-            # print(f'\t{pred:25s}\t{confidence_score:0.4f}')
-
             predict_list.append(pred)
         return (predict_list)
 
 
 if __name__ == '__main__':
-
     print("Webpage Program Loading...")
 
     trigger = 0
