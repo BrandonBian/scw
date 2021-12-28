@@ -35,7 +35,6 @@ global_machine_state = None
 
 # Database and Flask Handlers
 db = pymongo.MongoClient("localhost", 27017).energy
-app = Flask(__name__)
 
 # Recording Machine States
 machine_states_record = []

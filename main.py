@@ -18,6 +18,7 @@ from models import *
 from utils.utils import *
 from utils.datasets import *
 from utils.smartmeter_modbus import *
+from utils.globals import *
 
 import argparse
 from PIL import Image
@@ -33,31 +34,7 @@ import threading
 from queue import Queue
 import pymongo
 
-db = pymongo.MongoClient("localhost", 27017).energy
-
-MAX_OUTPUT_NUM = 5
-
 app = Flask(__name__)
-
-# All the possible words corresponding to the button/text-box number
-words1 = ["Continue", "Load", "System...", "Head...", "Right", "Forward", "Up", "Set Network...", "Static IP...",
-          "Increment", "Yes", "Start Model", "Pause",
-          "Lights always on", "Lights normal", "Deutsch", "Resume"]
-words2 = ["Material...", "Unload...", "Load Model", "Setup...", "Gantry...", "Left", "Backward", "Down", "Reverse",
-          "Dynamic IP...", "Test Parts...", "Lights off",
-          "Next Digit", "Disable UpnP", "Enable UpnP", "English", "Stop", "No"]
-words3 = ["Standby Mode...", "Machine...", "Tip...", "Select Axis", "Select Drive", "Load Upgrade...", "Last Digit",
-          "Select Language...", "Espanol", "Show Time"]
-words4 = ["Maintenance...", "Done...", "Cancel", "Next...", "Auto Powerdown"]
-
-global_predict_string = None
-global_finger_string = None
-global_machine_state = None
-
-STRGLO = ""
-BOOL = True
-StrTemp = ""
-
 
 def read_data():  # Save printer mode to a txt file on desktop
 
@@ -135,11 +112,6 @@ def meter_readings():
                               "F_current": vars[15], "J_current": vars[16], "N_current": vars[17]})
 
     return (json.dumps(vars))
-
-
-worker_camera = cv2.VideoCapture(0, cv2.CAP_DSHOW)
-printer_camera = cv2.VideoCapture(3, cv2.CAP_DSHOW)
-web_camera = cv2.VideoCapture(1, cv2.CAP_DSHOW)
 
 
 def worker_predict_image():
@@ -329,25 +301,6 @@ def webcam_get_frame():
     success, image = web_camera.read()
     ret, jpeg = cv2.imencode('.jpg', image)
     return jpeg.tobytes()
-
-
-machine_states_record = []
-current_machine_state = "Initialized"
-
-# Globals # Initialized -> Testing -> Calibration -> Heating -> Printing -> Ending
-Transition_states = {
-    "Initialized": "Testing",
-    "Testing": "Calibration",
-    "Calibration": "Heating",
-    "Heating": "Printing",
-    "Printing": "Ending",
-    "Ending": "Ending",
-    "ERROR: PLEASE INITIALIZE PRINTER": "Initialized",
-    "ERROR: PRINTER NOT IN INITIALIZED POSITION: BuildPlate": "Initialized",
-    "ERROR: PRINTER NOT IN INITIALIZED POSITION: Extruder": "Initialized",
-    "ERROR: PRINTER NOT IN INITIALIZED POSITION: Extruder Not Detected / Initialized": "Initialized",
-}
-
 
 class History:
     def __init__(self):
