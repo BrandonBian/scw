@@ -71,8 +71,6 @@ from queue import Queue
 
 import pymongo
 
-
-
 db = pymongo.MongoClient("localhost", 27017).energy
 
 MAX_OUTPUT_NUM = 5
@@ -90,29 +88,9 @@ words3 = ["Standby Mode...", "Machine...", "Tip...", "Select Axis", "Select Driv
           "Select Language...", "Espanol", "Show Time"]
 words4 = ["Maintenance...", "Done...", "Cancel", "Next...", "Auto Powerdown"]
 
-global_predict_string = ""  # Store the predicted texts
-global_finger_string = ""  # Store the finger position
-global_machine_state = ""  # Store the machine state prediction
-
-# def get_trigger():
-#     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#     s.connect((host_ip, port))
-#
-#     while True:
-#         try:
-#             data = s.recv(256)
-#             data = data.decode("ascii")
-#             if data:
-#                 if len(data) != 12: continue
-#                 trigger, timestamp = data.split('/')
-#                 print(trigger, timestamp)
-#                 if trigger == '1':
-#                     print("add trigger")
-#                     trigger_list.put(int(trigger))
-#             time.sleep(1)
-#         except KeyboardInterrupt:
-#             pass
-
+global_predict_string = None
+global_finger_string = None
+global_machine_state = None
 
 STRGLO = ""
 BOOL = True
@@ -124,34 +102,26 @@ def read_data():  # Save printer mode to a txt file on desktop
     global STRGLO, BOOL, StrTemp, buffer1
 
     ser = serial.Serial("COM3", 38400, timeout=None)
-    flag = 1
+
     if ser.is_open:
-        ret = True
-        count = write_port(ser, "trace c commandDetails on\n")
-#         print("bytes written：", count)
+
         write_port(ser, "ss\n")
 
         while True:
             if ser.in_waiting:
                 STRGLO = ser.read(ser.in_waiting).decode("utf-8")
-                # print('HERE', STRGLO)
+
                 file = r'C:\Users\lsam\Desktop\data_t.txt'
                 with open(file, 'a+') as f:
                     f.write(STRGLO)
                 StrTemp += STRGLO
-                # print('TMP', StrTemp)
+
                 x = StrTemp.split("\n")
-                # print('XXXXX', x[-1])
-                # buffer1 = x[0:-1]
+
                 if len(buffer1) > 1:
                     buffer1.pop(0)
                     buffer1.append(x[-1])
                 else:
-                    buffer1.append(x[-1])
-#                 print(buffer1[-1])
-                # if len(buffer1) > 1:
-                # print("x: ", buffer1[0], buffer1[-1], len(buffer1))
-                # print(STRGLO, end="")
 
 
 def open_port(portx, bps, timeout):
@@ -181,7 +151,7 @@ def index():
 def meter_readings():
     global global_predict_string
     global current_machine_state
-    # vars = generateData()
+
     try:
         vars = generateData()
     except:
@@ -190,19 +160,10 @@ def meter_readings():
     vars.append(global_predict_string)  # String predictions (19th)
     vars.append(global_finger_string)  # Finger predictions (20th)
     vars.append(current_machine_state)  # Machine state predictions (21th)
-    # print("Return list length: ", len(vars)) # 18+3
-
-    file = open('smartmeter_readings.csv', 'a+', newline='')
-    header = ['Organization', 'Established', 'CEO']
 
     this_time = [datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]]
 
-    # with file:
-    #    write = csv.writer(file)
-    #    write.writerows([[this_time, vars[0], vars[1], vars[2], vars[3], vars[4], vars[5], vars[6], vars[7], vars[8],
-    #                      vars[9], vars[10], vars[11], vars[12], vars[13], vars[14], vars[15], vars[16], vars[17]]])
 
-#     print("test-reach")
     db.energydata.insert_one({"time": this_time,
                               "A_acc_energy": vars[0], "B_acc_energy": vars[1], "E_acc_energy": vars[2],
                               "F_acc_energy": vars[3], "J_acc_energy": vars[4], "N_acc_energy": vars[5],
@@ -210,8 +171,7 @@ def meter_readings():
                               "F_power": vars[9], "J_power": vars[10], "N_power": vars[11],
                               "A_current": vars[12], "B_current": [13], "E_current": vars[14],
                               "F_current": vars[15], "J_current": vars[16], "N_current": vars[17]})
-#     print("test-wrote")
-#     print(vars)
+
     return (json.dumps(vars))
 
 
@@ -468,7 +428,7 @@ def transition_criterion(axis_left_x, extruder_left_x, extruder_left_y, extruder
     # print("Axis left: ", axis_left_x)
 
     # Extruder at far-left: extruder_left_y < 260 and > 250 (height); extruder_left_x < 150 and > 140; right_x < 265 and > 255
-    #
+
 
     if current_machine_state == "Initialized":
         if not (extruder_left_y < 260 and extruder_left_y > 250 and extruder_left_x < 150 and extruder_left_x > 140 and \
@@ -507,7 +467,6 @@ def printer_predict_image():
 
     ret, frame = printer_camera.read()  #
 
-    # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
     if ret != True:
         print("Error getting printer interior output")
@@ -539,9 +498,7 @@ def printer_predict_image():
 
     # Bounding-box colors
     cmap = plt.get_cmap("tab20b")
-    colors = [cmap(i) for i in np.linspace(0, 1, 20)]
 
-    tolerance = 10  # Tolerance for calibration (unit: pixel)
 
     # Iterate through images and save plot of detections
     for img_i, (path, detections) in enumerate(zip(imgs, img_detections)):
@@ -553,7 +510,6 @@ def printer_predict_image():
         extruder_right_x, extruder_right_y, buildplate_top_y = 0, 0, 0
         extruder_center_x = 0
 
-        machine_state = ""  # Current machine state
 
         # Draw bounding boxes and labels of detections
         if detections is not None:
@@ -598,9 +554,6 @@ def printer_predict_image():
             if Short_history.sum() > 2:
                 current_machine_state = Transition_states[current_machine_state]
                 Short_history.initialize()
-    #            print("Current Machine State: ", current_machine_state)
-
-    # print("[Current Machine State]: ", current_machine_state)
 
     suc, jpeg = cv2.imencode('.jpg', frame)
     return jpeg.tobytes()
@@ -636,27 +589,9 @@ def predict_panel():
     global global_predict_string
     global global_finger_string
     while True:
-        # try:
-        #     ret, frame = camera.predict_image()
-        # except:
-        #     print("Error Processing Finger Recognition")
-        #     continue
         frame, final_predict, finger_pos = worker_predict_image()
-        # print("Worker Predict: ", frame)
-
         global_predict_string = final_predict[1:]
         global_finger_string = str(finger_pos)
-
-        # if len(final_predict[1:]) == 0:
-        #     print("FUUU")
-
-        # print("Predict String: ", global_predict_string)
-        # print("Finger is on button number: ",global_finger_string)
-
-        # text_file = open("Output.txt", "w")
-        # text_file.write(final_predict)
-        # text_file.close()
-
         if frame is not None:
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
@@ -672,14 +607,6 @@ def predict_printer():
 
 # Assembly Webcam
 def gen_assem():  # Get the real time image of the assembly webcam (b1)
-    # image_hub = imagezmq.ImageHub(open_port='tcp://*:5554')
-
-    # try:
-    #     image_hub = imagezmq.ImageHub(open_port='tcp://*:5551', REQ_REP=True)
-    #
-    # except:
-    #     print("Failed to get Image Hub.")
-    #     image_hub.close()
 
     while True:
         print("Running Assembly Code")
@@ -692,49 +619,13 @@ def gen_assem():  # Get the real time image of the assembly webcam (b1)
 
         cam_name, frame = image_hub.recv_image()
         (flag, encodedImage) = cv2.imencode('.jpg', frame)
-        # cv2.imshow(cam_name, frame)
-        # cv2.waitKey(1)
         image_hub.send_reply(b'OK')
         print("frame: ", frame)
         yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' +
                bytearray(encodedImage) + b'\r\n')
         image_hub.close()
-        # yield (b'--frame\r\n'
-        #        b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
-        # except:
-        #     print("Failed to get Assembly Webcam image.")
-        #     image_hub.close()
         time.sleep(1)
-
-
-# def read_b1():
-#     image_hub = imagezmq.ImageHub(open_port='tcp://*:5554', REQ_REP=True)
-#
-#     while True:
-#         try:
-#             _, image = image_hub.recv_image()
-#             if image is None:
-#                 continue
-#             _, jpeg = cv2.imencode('.jpg', image)
-#             if len(buffer) >= 100000:
-#                 buffer.pop(0)
-#                 buffer.append(jpeg)
-#             else:
-#                 buffer.append(jpeg)
-#             image_hub.send_reply(b'OK')
-#         except KeyboardInterrupt:
-#             image_hub.close()
-#
-#
-# def gen_assem():
-#     global buffer
-#     while True:
-#         if len(buffer) != 0:
-#             img = buffer[-1]
-#             yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' +
-#                    bytearray(img) + b'\r\n')
-#             time.sleep(0.033)
 
 
 # Assembly Replay
@@ -1143,10 +1034,4 @@ if __name__ == '__main__':
                                           "threaded": True, "use_reloader": False})
     streamingP.start()
     open_port("COM3", 38400, None)
-    # t1 = threading.Thread(target=read_b1)
-    # t2 = threading.Thread(target=get_trigger)
-    # t1.start()
-    # t2.start()
 
-    # app.run(host='192.168.1.8', po+rt=8000)
-    # app.run(host='localhost', port=8000)
